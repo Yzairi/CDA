@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 import { PropertyCreateComponent } from '../property-create/property-create.component';
 import { PropertyService, Property } from '../../services/property.service';
 import { PropertyCardComponent } from '../../components/property-card/property-card.component';
@@ -77,9 +78,16 @@ export class DashboardComponent implements OnInit {
   saving = false;
   saveError = '';
 
-  constructor(public authService: AuthService, private propertyService: PropertyService, private fb: FormBuilder) {}
+  constructor(public authService: AuthService, private propertyService: PropertyService, private fb: FormBuilder, private router: Router) {}
 
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    if (this.authService.isAdmin()) {
+      // Redirect admins to dedicated admin dashboard
+      this.router.navigate(['/admin']);
+      return;
+    }
+    this.load();
+  }
 
   toggleCreate() { this.showCreate = !this.showCreate; }
 

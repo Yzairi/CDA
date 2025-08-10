@@ -1,0 +1,16 @@
+.admin-dashboard { padding: 1.5rem; }
+.tabs { display:flex; gap:.5rem; margin-bottom:1rem; }
+.tabs button { padding:.5rem 1rem; border:1px solid #ccc; background:#f5f5f5; cursor:pointer; border-radius:4px; }
+.tabs button.active { background:#2563eb; color:#fff; border-color:#2563eb; }
+.tab-content { animation: fade .25s ease-in; }
+.stats-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); gap:1rem; margin:1rem 0; }
+.stat-card { background:#fff; border:1px solid #e5e7eb; padding:.75rem; border-radius:6px; font-size:.9rem; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+.stat-card .value { display:block; font-size:1.25rem; font-weight:600; margin-top:.25rem; }
+.placeholder { color:#6b7280; font-style:italic; }
+@keyframes fade { from { opacity:0; transform:translateY(4px);} to { opacity:1; transform:translateY(0);} }
+.users-table { width:100%; border-collapse: collapse; margin-top:1rem; }
+.users-table th, .users-table td { border:1px solid #e5e7eb; padding:.5rem .6rem; text-align:left; font-size:.85rem; }
+.users-table th { background:#f8fafc; font-weight:600; }
+.users-table tbody tr:nth-child(even){ background:#f9fafb; }
+button.danger { background:#dc2626; color:#fff; border:1px solid #dc2626; margin-left:.4rem; }
+button.danger:hover { background:#b91c1c; }

@@ -7,7 +7,8 @@
       <a routerLink="/account" routerLinkActive="active" class="nav-link">Compte</a>
     </ng-container>
     <ng-template #loggedIn>
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">Dashboard</a>
+  <a *ngIf="!auth.isAdmin()" routerLink="/dashboard" routerLinkActive="active" class="nav-link">Dashboard</a>
+  <a *ngIf="auth.isAdmin()" routerLink="/admin" routerLinkActive="active" class="nav-link">Dashboard</a>
       <a href="#" class="nav-link" (click)="$event.preventDefault(); auth.logout()">Déconnexion</a>
     </ng-template>
   </nav>

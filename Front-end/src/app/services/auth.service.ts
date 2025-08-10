@@ -70,7 +70,7 @@ export class AuthService {
     this.currentUserSubject.next(null);
     try {
       const currentUrl = this.router.url;
-      if (currentUrl.startsWith('/dashboard') || currentUrl.startsWith('/backoffice')) {
+  if (currentUrl.startsWith('/dashboard') || currentUrl.startsWith('/backoffice') || currentUrl.startsWith('/admin')) {
         this.router.navigate(['/']);
       }
     } catch {}

@@ -1,0 +1,89 @@
+<div class="admin-dashboard">
+  <h1>Admin Dashboard</h1>
+  <nav class="tabs">
+    <button [class.active]="activeTab==='stats'" (click)="setTab('stats')">Stats</button>
+    <button [class.active]="activeTab==='annonces'" (click)="setTab('annonces')">Annonces</button>
+    <button [class.active]="activeTab==='users'" (click)="setTab('users')">Users</button>
+  </nav>
+
+  <section *ngIf="activeTab==='stats'" class="tab-content">
+    <h2>Statistics</h2>
+    <div class="stats-grid">
+      <div class="stat-card">Total Properties <span class="value">--</span></div>
+      <div class="stat-card">Published <span class="value">--</span></div>
+      <div class="stat-card">Draft <span class="value">--</span></div>
+      <div class="stat-card">Archived <span class="value">--</span></div>
+      <div class="stat-card">Total Users <span class="value">--</span></div>
+      <div class="stat-card">Active Users <span class="value">--</span></div>
+    </div>
+    <p class="placeholder">API wiring pending.</p>
+  </section>
+
+  <section *ngIf="activeTab==='annonces'" class="tab-content">
+    <h2>All Properties (Admin)</h2>
+    <div *ngIf="loadingProperties" class="placeholder">Chargement annonces...</div>
+    <div *ngIf="propertyError" class="placeholder" style="color:#dc2626">{{ propertyError }}</div>
+    <table *ngIf="!loadingProperties && !propertyError" class="users-table">
+      <thead>
+        <tr>
+          <th>Titre</th>
+          <th>Prix</th>
+          <th>Status</th>
+          <th>Créée</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of properties">
+          <td>{{ p.title }}</td>
+            <td>{{ p.price | number:'1.0-0' }} €</td>
+          <td>{{ statusLabel(p) }}</td>
+          <td>{{ p.createdAt | date:'short' }}</td>
+          <td>
+            <button (click)="publish(p)" [disabled]="savingPropIds.has(p.id) || statusLabel(p)==='PUBLISHED'">Publier</button>
+            <button (click)="archive(p)" [disabled]="savingPropIds.has(p.id) || statusLabel(p)==='ARCHIVED'">Archiver</button>
+            <button (click)="draft(p)" [disabled]="savingPropIds.has(p.id) || statusLabel(p)==='DRAFT'">Brouillon</button>
+            <button class="danger" (click)="delete(p)" [disabled]="savingPropIds.has(p.id)">Supprimer</button>
+          </td>
+        </tr>
+        <tr *ngIf="!properties.length">
+          <td colspan="5" class="placeholder">Aucune annonce.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section *ngIf="activeTab==='users'" class="tab-content">
+    <h2>Users Management</h2>
+    <div *ngIf="loadingUsers" class="placeholder">Chargement utilisateurs...</div>
+    <div *ngIf="userError" class="placeholder" style="color:#dc2626">{{ userError }}</div>
+    <table *ngIf="!loadingUsers && !userError" class="users-table">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Statut</th>
+          <th>Annonces</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of users">
+          <td>{{ u.email }}</td>
+          <td>{{ u.isAdmin ? 'ADMIN' : 'ADVERTISER' }}</td>
+          <td>{{ u.status }}</td>
+          <td>{{ u.propertyCount }}</td>
+          <td>
+            <button (click)="toggleAdmin(u)" [disabled]="savingUserIds.has(u.id)">
+              {{ u.isAdmin ? 'Retirer Admin' : 'Rendre Admin' }}
+            </button>
+            <button (click)="deleteUser(u)" class="danger" [disabled]="savingUserIds.has(u.id)">Supprimer</button>
+          </td>
+        </tr>
+        <tr *ngIf="!users.length">
+          <td colspan="5" class="placeholder">Aucun utilisateur.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
