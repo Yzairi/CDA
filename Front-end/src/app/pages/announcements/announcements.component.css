@@ -1,23 +1,226 @@
+/* Variables cohérentes avec la homepage */
+:host {
+  --c-bg-primary: #1f3c88;
+  --c-bg-primary-alt: #3057b9;
+  --c-accent: #ffe28a;
+  --c-bg-surface: #ffffff;
+  --c-border: #e1e7ef;
+  --c-text-dark: #1f2d3d;
+  --c-text-muted: #455468;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 2px 6px -2px rgba(0,0,0,.15);
+  --shadow-md: 0 6px 18px -6px rgba(0,0,0,.22);
+  --shadow-lg: 0 18px 42px -12px rgba(0,0,0,.35);
+  --transition: .35s cubic-bezier(.4,.8,.3,1);
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* Header de la page */
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-header h1 {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: var(--c-bg-primary);
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.page-header p {
+  font-size: 1.1rem;
+  color: var(--c-text-muted);
+  margin: 0;
+}
+
+/* Section des filtres */
+.filters-section {
+  background: var(--c-bg-surface);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--c-border);
+}
+
+.filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.filters-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--c-bg-primary);
+}
+
+.btn-clear {
+  background: transparent;
+  border: 1px solid var(--c-border);
+  color: var(--c-text-muted);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-clear:hover {
+  background: var(--c-bg-primary);
+  color: white;
+  border-color: var(--c-bg-primary);
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-weight: 500;
+  color: var(--c-text-dark);
+  font-size: 0.9rem;
+}
+
+.filter-input,
+.filter-select {
+  padding: 0.75rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  transition: var(--transition);
+  background: white;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: var(--c-bg-primary);
+  box-shadow: 0 0 0 3px rgba(31, 60, 136, 0.1);
+}
+
+.filter-input::placeholder {
+  color: var(--c-text-muted);
+}
+
+/* Section des résultats */
+.results-section {
+  margin-top: 2rem;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.results-count {
+  font-weight: 600;
+  color: var(--c-bg-primary);
+  font-size: 1.1rem;
+}
+
 .announcements-grid {
   display: grid;
-  gap: 1.25rem;
-  padding: 1.25rem 1.25rem 2rem;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  margin-bottom: 2rem;
 }
 
-h2 {
-  text-align: center;
-  margin: 1.5rem 0 .5rem;
-  font-size: 1.4rem;
-}
-
+/* États de chargement et d'erreur */
 .state {
   text-align: center;
-  padding: 2rem;
-  color: #64748b;
-  font-size: .9rem;
+  padding: 3rem 2rem;
+  color: var(--c-text-muted);
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .state.error {
   color: #b91c1c;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--c-border);
+  border-top: 3px solid var(--c-bg-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.no-results-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 1rem;
+  }
+  
+  .filters-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .announcements-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .results-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .filters-section {
+    padding: 1rem;
+  }
+  
+  .state {
+    padding: 2rem 1rem;
+  }
 }

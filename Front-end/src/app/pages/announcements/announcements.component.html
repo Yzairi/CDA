@@ -1,7 +1,102 @@
-<h2>Liste des annonces</h2>
-<div *ngIf="loading" class="state">Chargement...</div>
-<div *ngIf="error" class="state error">{{ error }}</div>
-<div class="announcements-grid" *ngIf="!loading && !error && properties.length">
-  <app-property-card *ngFor="let p of properties" [property]="p" [showStatus]="false"></app-property-card>
+<div class="page-container">
+  <!-- Filtres -->
+  <div class="filters-section">
+    <div class="filters-header">
+      <h3>Filtrer les annonces</h3>
+      <button class="btn-clear" (click)="clearFilters()" type="button">Effacer les filtres</button>
+    </div>
+    
+    <div class="filters-grid">
+      <!-- Recherche -->
+      <div class="filter-group">
+        <label for="search">Rechercher</label>
+        <input 
+          id="search"
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          (input)="applyFilters()"
+          placeholder="Titre, description..."
+          class="filter-input">
+      </div>
+
+      <!-- Type de bien -->
+      <div class="filter-group">
+        <label for="type">Type de bien</label>
+        <select 
+          id="type"
+          [(ngModel)]="selectedType" 
+          (change)="applyFilters()"
+          class="filter-select">
+          <option value="">Tous les types</option>
+          <option *ngFor="let type of propertyTypes" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+
+      <!-- Ville -->
+      <div class="filter-group">
+        <label for="city">Ville</label>
+        <select 
+          id="city"
+          [(ngModel)]="selectedCity" 
+          (change)="applyFilters()"
+          class="filter-select">
+          <option value="">Toutes les villes</option>
+          <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+        </select>
+      </div>
+
+      <!-- Prix min -->
+      <div class="filter-group">
+        <label for="priceMin">Prix minimum</label>
+        <input 
+          id="priceMin"
+          type="number" 
+          [(ngModel)]="priceMin" 
+          (input)="applyFilters()"
+          placeholder="0"
+          class="filter-input">
+      </div>
+
+      <!-- Prix max -->
+      <div class="filter-group">
+        <label for="priceMax">Prix maximum</label>
+        <input 
+          id="priceMax"
+          type="number" 
+          [(ngModel)]="priceMax" 
+          (input)="applyFilters()"
+          placeholder="∞"
+          class="filter-input">
+      </div>
+    </div>
+  </div>
+
+  <!-- Résultats -->
+  <div class="results-section">
+    <div class="results-header">
+      <span class="results-count">{{ filteredProperties.length }} annonce(s) trouvée(s)</span>
+    </div>
+
+    <div *ngIf="loading" class="state">
+      <div class="loading-spinner"></div>
+      <span>Chargement...</span>
+    </div>
+    
+    <div *ngIf="error" class="state error">{{ error }}</div>
+    
+    <div class="announcements-grid" *ngIf="!loading && !error && filteredProperties.length">
+      <app-property-card *ngFor="let p of filteredProperties" [property]="p" [showStatus]="false"></app-property-card>
+    </div>
+    
+    <div *ngIf="!loading && !error && !filteredProperties.length && properties.length" class="state">
+      <div class="no-results-icon">🔍</div>
+      <p>Aucune annonce ne correspond à vos critères.</p>
+      <button class="btn-clear" (click)="clearFilters()">Voir toutes les annonces</button>
+    </div>
+    
+    <div *ngIf="!loading && !error && !properties.length" class="state">
+      <div class="no-results-icon">📢</div>
+      <p>Aucune annonce pour le moment.</p>
+    </div>
+  </div>
 </div>
-<div *ngIf="!loading && !error && !properties.length" class="state">Aucune annonce pour le moment.</div>
