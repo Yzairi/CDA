@@ -19,7 +19,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
       </div>
 
       <div *ngIf="showCreate" class="create-wrapper">
-        <app-property-create (ngSubmit)="onCreated()"></app-property-create>
+        <app-property-create (created)="onCreated()"></app-property-create>
       </div>
 
       <h2>Mes annonces</h2>
@@ -50,6 +50,24 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
                   <label>Ville<input type="text" formControlName="city" /></label>
                   <label>Code Postal<input type="text" formControlName="zipCode" /></label>
                 </fieldset>
+                <div class="full images-block">
+                  <div class="images-header">
+                    <strong>Images</strong>
+                    <input type="file" multiple (change)="onAddImages($event, p)" accept="image/*" />
+                  </div>
+                  <div class="images-grid" *ngIf="p.images?.length; else noImg">
+                    <div class="img-item" *ngFor="let img of getImages(p); let i = index">
+                      <img [src]="img.url" alt="img" />
+                      <div class="img-actions">
+                        <button type="button" (click)="moveImage(p, i, -1)" [disabled]="i===0">↑</button>
+                        <button type="button" (click)="moveImage(p, i, 1)" [disabled]="i===p.images!.length-1">↓</button>
+                        <button type="button" class="danger" (click)="deleteImage(p, img)">✕</button>
+                      </div>
+                    </div>
+                  </div>
+                  <ng-template #noImg><div class="no-img">Aucune image</div></ng-template>
+                  <div class="mini-state" *ngIf="imgError">{{ imgError }}</div>
+                </div>
               </div>
               <div class="actions inside">
                 <button type="submit" [disabled]="editForm.invalid || saving">Enregistrer</button>
@@ -166,4 +184,48 @@ export class DashboardComponent implements OnInit {
     this.startEdit(p);
   }
   modifyLabel(p: Property): string { return 'Modifier'; }
+
+  imgError = '';
+
+  onAddImages(evt: Event, p: Property) {
+    const input = evt.target as HTMLInputElement;
+    if (!input.files || !input.files.length) return;
+    const files = Array.from(input.files);
+    // upload new images
+    this.propertyService.uploadImages(p.id, files).subscribe({
+      next: imgs => { p.images = (p.images || []).concat(imgs).sort((a,b)=>a.order-b.order); input.value=''; },
+      error: err => { this.imgError = err.error || 'Erreur upload images'; }
+    });
+  }
+
+  moveImage(p: Property, index: number, delta: number) {
+    if (!p.images) return;
+    const newIndex = index + delta;
+    if (newIndex < 0 || newIndex >= p.images.length) return;
+    const arr = [...p.images];
+    const [item] = arr.splice(index,1);
+    arr.splice(newIndex,0,item);
+    // reassign order locally
+    arr.forEach((img,i)=> img.order = i);
+    p.images = arr;
+    this.syncReorder(p);
+  }
+
+  private syncReorder(p: Property) {
+    if (!p.images) return;
+    const ids = p.images.sort((a,b)=>a.order-b.order).map(i=> i.id);
+    this.propertyService.reorderImages(p.id, ids).subscribe({ error: ()=>{} });
+  }
+
+  deleteImage(p: Property, img: {id:string}) {
+    if (!confirm('Supprimer cette image ?')) return;
+    this.propertyService.deleteImage(p.id, img.id).subscribe({
+      next: () => { if(p.images) p.images = p.images.filter(i=> i.id!==img.id).map((i,idx)=> ({...i, order: idx})); this.syncReorder(p); },
+      error: err => { this.imgError = err.error || 'Erreur suppression image'; }
+    });
+  }
+
+  getImages(p: Property) {
+    return (p.images || []).slice().sort((a,b)=> a.order - b.order);
+  }
 }

@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "J9ZbApfsMUTraKmiQ49ua7iRGAX5j/C+g5iptPp4IHnBaTnfqfn0qtabfk1wdzhjle6GJe/cks+55zOMenMTNg==",
+  "dgSpecHash": "8xbgCyrkYbwhwl8n0zODlvHIh0ji/PS1CbGFe+MMkd0+2RRNvqNLH9wbvnL37utX1MhZKJNUAqTMHSv0LigxEQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\yassin\\Desktop\\CDA\\Back-end\\Back-end.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\yassin\\.nuget\\packages\\awssdk.core\\3.7.300.25\\awssdk.core.3.7.300.25.nupkg.sha512",
+    "C:\\Users\\yassin\\.nuget\\packages\\awssdk.s3\\3.7.305\\awssdk.s3.3.7.305.nupkg.sha512",
     "C:\\Users\\yassin\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\yassin\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
     "C:\\Users\\yassin\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",

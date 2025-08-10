@@ -5,6 +5,9 @@ using Back_end.Enums;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using Amazon.S3;
+using Amazon.S3.Model;
+using Back_end.Data;
 
 namespace Back_end.Controllers
 {
@@ -13,10 +16,16 @@ namespace Back_end.Controllers
     public class PropertiesController : ControllerBase
     {
     private readonly PropertyRepository _repository;
+    private readonly IAmazonS3 _s3;
+    private readonly IConfiguration _config;
+    private readonly ApplicationDbContext _db;
 
-        public PropertiesController(PropertyRepository repository)
+        public PropertiesController(PropertyRepository repository, IAmazonS3 s3, IConfiguration config, ApplicationDbContext db)
         {
             _repository = repository;
+            _s3 = s3;
+            _config = config;
+            _db = db;
         }
 
         [HttpGet]
@@ -148,6 +157,129 @@ namespace Back_end.Controllers
 
             property.Status = PropertyStatus.DRAFT;
             await _repository.UpdateAsync(property);
+            return NoContent();
+        }
+
+    // SIMPLE: upload 1 image -> now persisted in DB
+        [Authorize]
+        [HttpPost("{id}/image-simple")]
+        public async Task<ActionResult<string>> UploadSingle(Guid id, IFormFile file, CancellationToken ct)
+        {
+            if (file == null || file.Length == 0) return BadRequest("file required");
+            var property = await _repository.GetByIdAsync(id);
+            if (property == null) return NotFound("property");
+
+            var bucket = _config["S3:Bucket"];
+            if (string.IsNullOrWhiteSpace(bucket)) return BadRequest("S3 bucket not configured");
+            var safeName = Path.GetFileName(file.FileName);
+            var key = $"tmp/{Guid.NewGuid()}_{safeName}"; // later: properties/{id}/...
+
+            using var stream = file.OpenReadStream();
+            var put = new PutObjectRequest
+            {
+                BucketName = bucket,
+                Key = key,
+                InputStream = stream,
+                ContentType = file.ContentType
+            };
+            await _s3.PutObjectAsync(put, ct);
+            var region = _config["S3:Region"] ?? "eu-west-3";
+            var url = $"https://{bucket}.s3.{region}.amazonaws.com/{key}";
+
+            // Persist image
+            var order = property.Images.Any() ? property.Images.Max(i => i.Order) + 1 : 0;
+            var image = new Image(url)
+            {
+                PropertyId = id,
+                Order = order
+            };
+            _db.Images.Add(image);
+            await _db.SaveChangesAsync(ct);
+            return Ok(url);
+        }
+
+        // MULTI upload endpoint returning list of image metadata
+        public record ImageDto(Guid Id, string Url, int Order);
+
+        [Authorize]
+        [HttpPost("{id}/images")]
+        public async Task<ActionResult<IEnumerable<ImageDto>>> UploadMany(Guid id, List<IFormFile> files, CancellationToken ct)
+        {
+            if (files == null || files.Count == 0) return BadRequest("files required");
+            var property = await _repository.GetByIdAsync(id);
+            if (property == null) return NotFound("property");
+
+            var bucket = _config["S3:Bucket"];
+            if (string.IsNullOrWhiteSpace(bucket)) return BadRequest("S3 bucket not configured");
+            var region = _config["S3:Region"] ?? "eu-west-3";
+            int order = property.Images.Any() ? property.Images.Max(i => i.Order) + 1 : 0;
+            var result = new List<ImageDto>();
+
+            foreach (var file in files)
+            {
+                if (file.Length == 0) continue;
+                var safeName = Path.GetFileName(file.FileName);
+                var key = $"properties/{id}/{Guid.NewGuid()}_{safeName}";
+                using var stream = file.OpenReadStream();
+                var put = new PutObjectRequest
+                {
+                    BucketName = bucket,
+                    Key = key,
+                    InputStream = stream,
+                    ContentType = file.ContentType
+                };
+                await _s3.PutObjectAsync(put, ct);
+                var url = $"https://{bucket}.s3.{region}.amazonaws.com/{key}";
+                var image = new Image(url)
+                {
+                    PropertyId = id,
+                    Order = order++
+                };
+                _db.Images.Add(image);
+                result.Add(new ImageDto(image.Id, image.Url, image.Order));
+            }
+            await _db.SaveChangesAsync(ct);
+            return Ok(result.OrderBy(r => r.Order));
+        }
+
+        // DELETE single image
+        [Authorize]
+        [HttpDelete("{propertyId}/images/{imageId}")]
+        public async Task<IActionResult> DeleteImage(Guid propertyId, Guid imageId, CancellationToken ct)
+        {
+            var property = await _repository.GetByIdAsync(propertyId);
+            if (property == null) return NotFound("property");
+            var image = property.Images.FirstOrDefault(i => i.Id == imageId);
+            if (image == null) return NotFound("image");
+
+            _db.Images.Remove(image);
+            await _db.SaveChangesAsync(ct);
+            return NoContent();
+        }
+
+        public record ReorderRequest(List<Guid> ImageIds);
+
+        [Authorize]
+        [HttpPut("{propertyId}/images/reorder")]
+        public async Task<IActionResult> ReorderImages(Guid propertyId, [FromBody] ReorderRequest body, CancellationToken ct)
+        {
+            if (body.ImageIds == null || body.ImageIds.Count == 0) return BadRequest("imageIds required");
+            var property = await _repository.GetByIdAsync(propertyId);
+            if (property == null) return NotFound("property");
+
+            // Ensure all ids belong to property
+            var images = property.Images.OrderBy(i => i.Order).ToList();
+            if (images.Select(i => i.Id).Except(body.ImageIds).Any() || body.ImageIds.Except(images.Select(i => i.Id)).Any())
+            {
+                return BadRequest("imageIds mismatch");
+            }
+            // Apply new order
+            var orderMap = body.ImageIds.Select((id, idx) => new { id, idx }).ToDictionary(x => x.id, x => x.idx);
+            foreach (var img in images)
+            {
+                img.Order = orderMap[img.Id];
+            }
+            await _db.SaveChangesAsync(ct);
             return NoContent();
         }
     }

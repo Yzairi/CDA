@@ -1,4 +1,7 @@
 <div class="card">
+  <div class="image-wrapper" *ngIf="property.images && property.images.length">
+    <img [src]="property.images[0].url" alt="image" class="thumb" />
+  </div>
   <div class="card-header">
     <h3 class="title" title="{{ property.title }}">{{ property.title }}</h3>
     <span class="price">{{ priceFormatted }}</span>

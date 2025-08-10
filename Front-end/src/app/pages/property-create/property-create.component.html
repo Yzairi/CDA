@@ -53,9 +53,21 @@
       </div>
     </fieldset>
 
+    <div class="row">
+      <label>Images (optionnel)</label>
+      <input type="file" (change)="onFileSelected($event)" accept="image/*" multiple />
+    </div>
+    <div class="previews" *ngIf="previews.length">
+      <div class="preview-item" *ngFor="let p of previews; let i = index">
+        <img [src]="p.url" [alt]="p.name" />
+        <button type="button" (click)="removeImage(i)">×</button>
+      </div>
+    </div>
+
     <button type="submit">Créer</button>
   </form>
 
   <div class="success" *ngIf="successMessage">{{ successMessage }}</div>
   <div class="error" *ngIf="errorMessage && !successMessage">{{ errorMessage }}</div>
+
 </div>

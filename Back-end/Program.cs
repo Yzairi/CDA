@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Amazon.S3;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +57,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+
+// Minimal S3 client (credentials from aws configure / env vars)
+builder.Services.AddSingleton<IAmazonS3>(_ =>
+{
+    var region = builder.Configuration["S3:Region"] ?? "eu-west-3";
+    return new AmazonS3Client(Amazon.RegionEndpoint.GetBySystemName(region));
+});
 
 var app = builder.Build();
 
