@@ -11,5 +11,18 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
+  menuOpen = false;
+
   constructor(public auth: AuthService) {}
+
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenuOnNavigate(evt: Event) {
+    const target = evt.target as HTMLElement;
+    if (target.closest('a')) {
+      this.menuOpen = false;
+    }
+  }
 }

@@ -1,6 +1,9 @@
-<header class="header">
+<header class="header" [class.menu-open]="menuOpen">
   <div class="logo">LOGO</div>
-  <nav class="nav">
+  <button class="burger" type="button" (click)="toggleMenu()" [attr.aria-label]="menuOpen ? 'Fermer le menu' : 'Menu'" [attr.aria-expanded]="menuOpen" aria-controls="mainNav">
+    <span></span><span></span><span></span>
+  </button>
+  <nav class="nav" id="mainNav" (click)="closeMenuOnNavigate($event)">
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Home</a>
     <a routerLink="/announcements" routerLinkActive="active" class="nav-link">Announcements</a>
     <ng-container *ngIf="!auth.isLoggedIn(); else loggedIn">
