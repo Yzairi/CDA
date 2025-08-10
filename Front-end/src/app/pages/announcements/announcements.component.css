@@ -1,0 +1,23 @@
+.announcements-grid {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.25rem 1.25rem 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+h2 {
+  text-align: center;
+  margin: 1.5rem 0 .5rem;
+  font-size: 1.4rem;
+}
+
+.state {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+  font-size: .9rem;
+}
+
+.state.error {
+  color: #b91c1c;
+}

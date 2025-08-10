@@ -1,0 +1,61 @@
+<div class="property-form-container">
+  <h2>Créer une annonce</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <label>Titre</label>
+      <input type="text" formControlName="title" />
+      <div class="error" *ngIf="submitted && f['title'].errors">Titre requis (max 120 caractères)</div>
+    </div>
+
+    <div class="row">
+      <label>Description</label>
+      <textarea formControlName="description" rows="4"></textarea>
+      <div class="error" *ngIf="submitted && f['description'].errors">Min 10 caractères</div>
+    </div>
+
+    <div class="row">
+      <label>Type</label>
+      <select formControlName="type">
+        <option value="" disabled>-- Choisir --</option>
+        <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+      </select>
+      <div class="error" *ngIf="submitted && f['type'].errors">Type requis</div>
+    </div>
+
+    <div class="row">
+      <label>Prix (€)</label>
+      <input type="number" formControlName="price" />
+      <div class="error" *ngIf="submitted && f['price'].errors">Prix > 0 requis</div>
+    </div>
+
+    <div class="row">
+      <label>Surface (m²)</label>
+      <input type="number" formControlName="surface" />
+    </div>
+
+    <fieldset formGroupName="address">
+      <legend>Adresse</legend>
+      <div class="row">
+        <label>Rue</label>
+        <input type="text" formControlName="street" />
+        <div class="error" *ngIf="submitted && addressGroup['street'].errors">Requis</div>
+      </div>
+      <div class="row">
+        <label>Ville</label>
+        <input type="text" formControlName="city" />
+        <div class="error" *ngIf="submitted && addressGroup['city'].errors">Requis</div>
+      </div>
+      <div class="row">
+        <label>Code Postal</label>
+        <input type="text" formControlName="zipCode" />
+        <div class="error" *ngIf="submitted && addressGroup['zipCode'].errors">Format invalide</div>
+      </div>
+    </fieldset>
+
+    <button type="submit">Créer</button>
+  </form>
+
+  <div class="success" *ngIf="successMessage">{{ successMessage }}</div>
+  <div class="error" *ngIf="errorMessage && !successMessage">{{ errorMessage }}</div>
+</div>

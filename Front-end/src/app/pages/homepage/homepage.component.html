@@ -1,0 +1,77 @@
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <h1>Déposez votre annonce immobilière facilement</h1>
+      <p>Vendez ou louez votre bien plus vite grâce à une mise en avant optimisée et des outils simples.</p>
+      <div class="cta-group">
+        <a routerLink="/announcements" class="btn primary">Voir les annonces</a>
+        <a routerLink="/account" class="btn secondary">Déposer une annonce</a>
+      </div>
+      <div class="quick-stats">
+        <div><strong>{{ stats.properties }}</strong><span>annonces actives</span></div>
+        <div><strong>{{ stats.users }}</strong><span>utilisateurs</span></div>
+        <div><strong>{{ stats.avgTime }}j</strong><span>temps moyen de publication</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="illu">
+        <div class="card mock" *ngFor="let m of mockCards; index as i" [style.animationDelay]="(i*0.15)+'s'">
+          <div class="img-skeleton"></div>
+          <div class="line w70"></div>
+          <div class="line w40"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="steps">
+  <h2>Comment ça marche ?</h2>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="icon">1</div>
+      <h3>Créez votre compte</h3>
+      <p>Inscrivez-vous en quelques secondes pour accéder à votre espace sécurisé.</p>
+    </div>
+    <div class="step">
+      <div class="icon">2</div>
+      <h3>Déposez votre annonce</h3>
+      <p>Renseignez les informations clés: titre, description, prix, adresse.</p>
+    </div>
+    <div class="step">
+      <div class="icon">3</div>
+      <h3>Publiez et suivez</h3>
+      <p>Publiez votre annonce et mettez-la à jour à tout moment depuis le tableau de bord.</p>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <h2>Pourquoi utiliser notre plateforme ?</h2>
+  <div class="feat-grid">
+    <div class="feat">
+      <h3>Mise en ligne rapide</h3>
+      <p>Interface claire et formulaire optimisé pour gagner du temps.</p>
+    </div>
+    <div class="feat">
+      <h3>Gestion facile</h3>
+      <p>Modifiez, archivez, republiez vos annonces en un clic.</p>
+    </div>
+    <div class="feat">
+      <h3>Visibilité</h3>
+      <p>Annonces filtrées par statut pour ne montrer que le pertinent au public.</p>
+    </div>
+    <div class="feat">
+      <h3>Sécurité</h3>
+      <p>Données protégées et gestion propriétaire uniquement.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta-final">
+  <div class="box">
+    <h2>Prêt à commencer ?</h2>
+    <p>Publiez votre première annonce dès maintenant.</p>
+    <a routerLink="/account" class="btn big">Créer mon annonce</a>
+  </div>
+</section>

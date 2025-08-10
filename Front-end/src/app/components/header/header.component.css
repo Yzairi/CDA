@@ -1,0 +1,35 @@
+.header {
+  background-color: #e8f5e9;  /* Vert très clair */
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2e7d32;  /* Vert plus foncé pour le contraste */
+}
+
+.nav {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  color: #1b5e20;  /* Vert foncé pour les liens */
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #43a047;  /* Vert moyen au hover */
+}
+
+.nav-link.active {
+  color: #43a047;
+  border-bottom: 2px solid #43a047;
+}

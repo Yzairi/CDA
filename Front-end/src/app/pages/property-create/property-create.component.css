@@ -1,0 +1,73 @@
+.property-form-container {
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 1.5rem 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  font-family: Arial, sans-serif;
+}
+.property-form-container h2 {
+  margin-top: 0;
+  font-size: 1.4rem;
+  text-align: center;
+}
+form .row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+label {
+  font-weight: 600;
+  margin-bottom: .25rem;
+}
+input, textarea, select {
+  padding: .55rem .65rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: .95rem;
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25,118,210,.15);
+}
+fieldset {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: .75rem 1rem 1rem;
+  margin-bottom: 1rem;
+}
+legend {
+  padding: 0 .5rem;
+  font-weight: 600;
+  font-size: .95rem;
+}
+button[type=submit] {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  padding: .7rem 1.25rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  transition: background .2s;
+}
+button[type=submit]:hover {
+  background: #125a9f;
+}
+.error {
+  color: #c62828;
+  font-size: .78rem;
+  margin-top: .25rem;
+}
+.success {
+  margin-top: 1rem;
+  background: #e8f5e9;
+  border: 1px solid #66bb6a;
+  color: #2e7d32;
+  padding: .6rem .8rem;
+  border-radius: 4px;
+  font-size: .85rem;
+}

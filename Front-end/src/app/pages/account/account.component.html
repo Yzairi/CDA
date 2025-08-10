@@ -1,0 +1,49 @@
+<div class="account-container">
+  <h2>{{ isLoginMode ? 'Login' : 'Register' }}</h2>
+  
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input 
+        type="email" 
+        id="email" 
+        class="form-control" 
+        formControlName="email" 
+        [class.is-invalid]="form.get('email')?.touched && form.get('email')?.invalid">
+      <div class="error-message" *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['required']">
+        Email is required
+      </div>
+      <div class="error-message" *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['email']">
+        Please enter a valid email
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input 
+        type="password" 
+        id="password" 
+        class="form-control" 
+        formControlName="password"
+        [class.is-invalid]="form.get('password')?.touched && form.get('password')?.invalid">
+      <div class="error-message" *ngIf="form.get('password')?.touched && form.get('password')?.errors?.['required']">
+        Password is required
+      </div>
+      <div class="error-message" *ngIf="form.get('password')?.touched && form.get('password')?.errors?.['minlength']">
+        Password must be at least 6 characters
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="form.invalid">
+      {{ isLoginMode ? 'Login' : 'Register' }}
+    </button>
+
+    <div class="error-message" *ngIf="error">
+      {{ error }}
+    </div>
+
+    <div class="toggle-mode" (click)="toggleMode()">
+      {{ isLoginMode ? 'New user? Create an account' : 'Already have an account? Login' }}
+    </div>
+  </form>
+</div>

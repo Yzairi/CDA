@@ -1,0 +1,131 @@
+.dashboard-container {
+  max-width: 1000px;
+  margin: 1.5rem auto;
+  padding: 1.5rem 2rem 2.5rem;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.dashboard-container h1 {
+  color: #007bff;
+  margin-bottom: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.toolbar button {
+  background: #1d4ed8;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.toolbar button.refresh {
+  background: #475569;
+}
+
+.toolbar button:hover {
+  filter: brightness(1.1);
+}
+
+.create-wrapper {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin: 0 0 0.75rem;
+  color: #0f172a;
+}
+
+.state {
+  text-align: center;
+  padding: 1.5rem;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.state.error {
+  color: #b91c1c;
+}
+
+.my-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.actions button {
+  flex: 1 1 auto;
+  background: #334155;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.5rem;
+  border-radius: 5px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  filter: brightness(1.15);
+}
+
+.actions button.danger {
+  background: #b91c1c;
+}
+
+.actions button.danger:hover {
+  background: #991b1b;
+}
+
+.actions button:nth-child(1) {
+  background: #f59e0b;
+}
+
+.actions button:nth-child(1):hover {
+  background: #d97706;
+}
+
+.actions button:nth-child(2) {
+  background: #16a34a;
+}
+
+.actions button:nth-child(2):hover {
+  background: #15803d;
+}
+
+.actions button:nth-child(3) {
+  background: #475569;
+}
+
+.actions button:nth-child(3):hover {
+  background: #1e293b;
+}

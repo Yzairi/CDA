@@ -1,0 +1,14 @@
+<header class="header">
+  <div class="logo">LOGO</div>
+  <nav class="nav">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Home</a>
+    <a routerLink="/announcements" routerLinkActive="active" class="nav-link">Announcements</a>
+    <ng-container *ngIf="!auth.isLoggedIn(); else loggedIn">
+      <a routerLink="/account" routerLinkActive="active" class="nav-link">Compte</a>
+    </ng-container>
+    <ng-template #loggedIn>
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">Dashboard</a>
+      <a href="#" class="nav-link" (click)="$event.preventDefault(); auth.logout()">Déconnexion</a>
+    </ng-template>
+  </nav>
+</header>

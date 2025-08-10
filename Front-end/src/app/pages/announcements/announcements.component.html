@@ -1,0 +1,7 @@
+<h2>Liste des annonces</h2>
+<div *ngIf="loading" class="state">Chargement...</div>
+<div *ngIf="error" class="state error">{{ error }}</div>
+<div class="announcements-grid" *ngIf="!loading && !error && properties.length">
+  <app-property-card *ngFor="let p of properties" [property]="p" [showStatus]="false"></app-property-card>
+</div>
+<div *ngIf="!loading && !error && !properties.length" class="state">Aucune annonce pour le moment.</div>
