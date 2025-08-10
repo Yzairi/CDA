@@ -1,26 +1,21 @@
 <div class="hero">
   <div class="hero-inner">
     <div class="hero-text">
-      <h1>Déposez votre annonce immobilière facilement</h1>
-      <p>Vendez ou louez votre bien plus vite grâce à une mise en avant optimisée et des outils simples.</p>
-      <div class="cta-group">
-        <a routerLink="/announcements" class="btn primary">Voir les annonces</a>
-        <a routerLink="/account" class="btn secondary">Déposer une annonce</a>
+      <h1>Déposez votre annonce immobilière</h1>
+      <p>Publiez facilement votre bien à vendre ou à louer sur l'un des principaux portails immobiliers en France.</p>
+      <div class="benefits">
+        <div class="benefit">Diffusez une annonce percutante avec une description détaillée et de belles photos</div>
+        <div class="benefit">Touchez des milliers d'acheteurs ou locataires potentiels</div>
+        <div class="benefit">Profitez de nos outils IA à destination des propriétaires immobiliers</div>
       </div>
-      <div class="quick-stats">
-        <div><strong>{{ stats.properties }}</strong><span>annonces actives</span></div>
-        <div><strong>{{ stats.users }}</strong><span>utilisateurs</span></div>
-        <div><strong>{{ stats.avgTime }}j</strong><span>temps moyen de publication</span></div>
+      <div class="cta-group">
+        <a [routerLink]="getDepositLink()" class="btn primary">Déposer mon annonce</a>
       </div>
     </div>
     <div class="hero-visual">
-      <div class="illu">
-        <div class="card mock" *ngFor="let m of mockCards; index as i" [style.animationDelay]="(i*0.15)+'s'">
-          <div class="img-skeleton"></div>
-          <div class="line w70"></div>
-          <div class="line w40"></div>
-        </div>
-      </div>
+      <img src="https://www.seloger.com/assets/apps/fsbo_depositFunnelLandingFsrboGeneric/v1/client/public/images/76c9d56f-c7d7-43b1-bbb2-eaa909dab937.webp" 
+           alt="Déposer une annonce immobilière" 
+           class="hero-image">
     </div>
   </div>
 </div>

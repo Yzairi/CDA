@@ -1,12 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { PropertyService, Property } from '../../services/property.service';
+import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-homepage',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.css']
 })
@@ -15,7 +17,10 @@ export class HomepageComponent implements OnInit, OnDestroy {
   mockCards = Array.from({ length: 5 });
   private sub?: Subscription;
 
-  constructor(private propertyService: PropertyService) {}
+  constructor(
+    private propertyService: PropertyService,
+    public auth: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.sub = this.propertyService.getAll().subscribe({
@@ -32,6 +37,10 @@ export class HomepageComponent implements OnInit, OnDestroy {
   private isPublished(status: string | number): boolean {
     if (typeof status === 'number') return status === 1; // assuming enum mapping
     return status === 'PUBLISHED';
+  }
+
+  getDepositLink(): string {
+    return this.auth.isLoggedIn() ? '/dashboard' : '/account';
   }
 
   ngOnDestroy(): void {
