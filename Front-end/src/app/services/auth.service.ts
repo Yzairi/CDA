@@ -7,17 +7,15 @@ import { Router } from '@angular/router';
 interface User {
   id: string;
   email: string;
-  role: number | string;
-  status: string;
-  createdAt: string;
+  isAdmin: boolean;
+  token: string;
 }
 
-interface LoginResponse {
+interface AuthResponse {
   id: string;
   email: string;
-  role: number | string;
-  status: string;
-  createdAt: string;
+  isAdmin: boolean;
+  token: string;
 }
 
 @Injectable({
@@ -43,34 +41,31 @@ export class AuthService {
     }
   }
 
-  register(email: string, password: string, isAdmin: boolean = false): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/Users/register`, { email, password, isAdmin }).pipe(
-      tap(res => {
-        const user: User = { ...res };
-        if (this.isBrowser) {
-          localStorage.setItem('currentUser', JSON.stringify(user));
-        }
-        this.currentUserSubject.next(user);
-      })
+  register(email: string, password: string, isAdmin: boolean = false): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/Users/register`, { email, password, isAdmin }).pipe(
+      tap(res => this.persistAuth(res))
     );
   }
 
-  login(email: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/Users/login`, { email, password }).pipe(
-      tap(res => {
-        const user: User = { ...res };
-        if (this.isBrowser) {
-          localStorage.setItem('currentUser', JSON.stringify(user));
-        }
-        this.currentUserSubject.next(user);
-      })
+  login(email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/Users/login`, { email, password }).pipe(
+      tap(res => this.persistAuth(res))
     );
+  }
+
+  private persistAuth(res: AuthResponse) {
+    const user: User = { id: res.id, email: res.email, isAdmin: res.isAdmin, token: res.token };
+    if (this.isBrowser) {
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      localStorage.setItem('access_token', res.token);
+    }
+    this.currentUserSubject.next(user);
   }
 
   logout(): void {
     if (this.isBrowser) {
       localStorage.removeItem('currentUser');
-      localStorage.removeItem('token');
+      localStorage.removeItem('access_token');
     }
     this.currentUserSubject.next(null);
     try {
@@ -86,23 +81,14 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    const user = this.currentUserSubject.value;
-    if (!user) return false;
-    const role = user.role;
-    if (typeof role === 'number') {
-      return role === 1;
-    }
-    return role.toString().toUpperCase() === 'ADMIN';
+  const user = this.currentUserSubject.value;
+  return !!user?.isAdmin;
   }
 
   getRoleLabel(): string | null {
-    const user = this.currentUserSubject.value;
-    if (!user) return null;
-    const role = user.role;
-    if (typeof role === 'number') {
-      return role === 1 ? 'ADMIN' : 'ADVERTISER';
-    }
-    return role.toString();
+  const user = this.currentUserSubject.value;
+  if (!user) return null;
+  return user.isAdmin ? 'ADMIN' : 'ADVERTISER';
   }
 
 }

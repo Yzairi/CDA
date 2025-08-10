@@ -15,7 +15,6 @@ export interface CreatePropertyPayload {
   price: number;
   surface: number;
   address: AddressPayload;
-  userId: string;
 }
 
 export interface UpdatePropertyPayload extends Partial<CreatePropertyPayload> {
@@ -24,6 +23,7 @@ export interface UpdatePropertyPayload extends Partial<CreatePropertyPayload> {
 
 export interface Property extends CreatePropertyPayload {
   id: string;
+  userId: string; // present in backend response for ownership
   status: string | number;
   createdAt: string;
   publishedAt?: string | null;

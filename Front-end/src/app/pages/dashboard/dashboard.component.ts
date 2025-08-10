@@ -90,7 +90,9 @@ export class DashboardComponent implements OnInit {
     if(!user) return;
     this.loading = true; this.error = null;
     this.propertyService.getAll().subscribe({
-      next: props => { this.myProperties = props.filter(p => p.userId === user.id); this.loading = false; },
+      next: props => { 
+        this.myProperties = props.filter(p => p.userId === user.id); 
+        this.loading = false; },
       error: err => { this.error = err.error || 'Erreur'; this.loading = false; }
     });
   }
@@ -126,8 +128,7 @@ export class DashboardComponent implements OnInit {
       type: v.type,
       price: v.price,
       surface: v.surface,
-      address: v.address,
-      userId: original.userId // not used by update endpoint, but we keep structure consistent
+      address: v.address
     } as any;
     this.propertyService.update(this.editingId, payload).subscribe({
       next: () => {

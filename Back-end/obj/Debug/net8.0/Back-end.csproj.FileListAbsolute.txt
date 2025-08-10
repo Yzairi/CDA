@@ -168,3 +168,5 @@ C:\Users\yassin\Desktop\CDA\Back-end\bin\Debug\net8.0\runtimes\win\lib\net6.0\Sy
 C:\Users\yassin\Desktop\CDA\Back-end\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 C:\Users\yassin\Desktop\CDA\Back-end\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 C:\Users\yassin\Desktop\CDA\Back-end\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\yassin\Desktop\CDA\Back-end\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\yassin\Desktop\CDA\Back-end\obj\Debug\net8.0\Back-end.sourcelink.json

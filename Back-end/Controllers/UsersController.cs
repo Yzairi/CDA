@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Back_end.Models;
 using Back_end.Persistence;
 using Back_end.Enums;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Back_end.Controllers
 {
@@ -9,7 +13,7 @@ namespace Back_end.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly UserRepository _repository;
+    private readonly UserRepository _repository;
 
         public UsersController(UserRepository repository)
         {
@@ -25,15 +29,38 @@ namespace Back_end.Controllers
             string Email,
             string Password);
 
-        public record LoginResponse(
+        public record AuthResponse(
             Guid Id,
             string Email,
-            UserRole Role,
-            UserStatus Status,
-            DateTime CreatedAt);
+            bool IsAdmin,
+            string Token);
 
-        [HttpPost("login")]
-        public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
+        private string GenerateToken(User user)
+        {
+            var config = HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+            var secret = config["Jwt:Secret"] ?? throw new InvalidOperationException("Jwt:Secret missing");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("isAdmin", (user.Role == UserRole.ADMIN).ToString().ToLower())
+            };
+
+            var expires = DateTime.UtcNow.AddMinutes(60);
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: expires,
+                signingCredentials: creds
+            );
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            return jwt;
+        }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
         {
             var user = await _repository.GetByEmailAsync(request.Email);
             if (user == null)
@@ -46,11 +73,12 @@ namespace Back_end.Controllers
             if (user.Status != UserStatus.ACTIVE)
                 return BadRequest("Account is not active");
 
-            return Ok(new LoginResponse(user.Id, user.Email, user.Role, user.Status, user.CreatedAt));
+            var token = GenerateToken(user);
+            return Ok(new AuthResponse(user.Id, user.Email, user.Role == UserRole.ADMIN, token));
         }
 
-        [HttpPost("register")]
-        public async Task<ActionResult<LoginResponse>> Register(RegisterUserRequest request)
+    [HttpPost("register")]
+    public async Task<ActionResult<AuthResponse>> Register(RegisterUserRequest request)
         {
             var existingUser = await _repository.GetByEmailAsync(request.Email);
             if (existingUser != null)
@@ -68,7 +96,8 @@ namespace Back_end.Controllers
             };
 
             var created = await _repository.CreateAsync(user);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, new LoginResponse(created.Id, created.Email, created.Role, created.Status, created.CreatedAt));
+            var token = GenerateToken(created);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, new AuthResponse(created.Id, created.Email, created.Role == UserRole.ADMIN, token));
         }
 
         [HttpGet]

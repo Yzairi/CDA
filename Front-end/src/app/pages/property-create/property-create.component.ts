@@ -49,8 +49,7 @@ export class PropertyCreateComponent {
     }
 
     const payload: CreatePropertyPayload = {
-      ...this.form.value,
-      userId: currentUser.id
+      ...this.form.value
     };
 
     this.propertyService.create(payload).subscribe({
