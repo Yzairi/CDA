@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withFetch } from '@angular/common/http';
 import { AUTH_INTERCEPTOR_PROVIDER } from './services/auth.interceptor';
 
 import { routes } from './app.routes';
@@ -11,7 +11,8 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes), 
     provideClientHydration(),
-  provideHttpClient(withInterceptorsFromDi()),
+  // Enable Fetch API for HttpClient (improves SSR performance & compatibility)
+  provideHttpClient(withFetch(), withInterceptorsFromDi()),
   AUTH_INTERCEPTOR_PROVIDER
   ]
 };
