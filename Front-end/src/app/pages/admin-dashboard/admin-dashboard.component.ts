@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { UserService, RawUser } from '../../services/user.service';
 import { PropertyService, Property } from '../../services/property.service';
+import { StatsService, StatsSummary } from '../../services/stats.service';
+import { ChartsService, TimelineResponse, TimelinePoint } from '../../services/charts.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -26,9 +28,24 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   propertyError = '';
   savingPropIds = new Set<string>();
   private authSub?: Subscription;
+  stats?: StatsSummary;
+  loadingStats = false;
+  statsError = '';
+  timeline?: TimelineResponse;
+  loadingTimeline = false;
+  timelineError = '';
+  usersChart?: ChartRenderable;
+  propsChart?: ChartRenderable;
+  publishedChart?: ChartRenderable;
+  tooltip?: { x: number; y: number; value: number; date: string };
+
+  chartWidth = 520; // enlarged charts
+  chartHeight = 180;
 
   constructor(private userService: UserService,
               private propertyService: PropertyService,
+              private statsService: StatsService,
+              private charts: ChartsService,
               private auth: AuthService,
               private router: Router) {}
 
@@ -41,6 +58,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.router.navigate(['/']);
       }
     });
+  this.loadStats();
+  this.loadTimeline();
     this.loadUsers();
   }
 
@@ -59,6 +78,76 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       error: err => { this.propertyError = err.error || 'Erreur chargement annonces'; this.loadingProperties=false; }
     });
   }
+
+  loadStats() {
+    this.loadingStats = true; this.statsError='';
+    this.statsService.getSummary().subscribe({
+      next: s => { this.stats = s; this.loadingStats=false; },
+      error: err => { this.statsError = err.error || 'Erreur stats'; this.loadingStats=false; }
+    });
+  }
+
+  loadTimeline() {
+    this.loadingTimeline = true; this.timelineError='';
+    this.charts.getTimeline().subscribe({
+  next: t => { this.timeline = t; this.loadingTimeline=false; this.finalizeTimeline(); },
+      error: err => { this.timelineError = err.error || 'Erreur timeline'; this.loadingTimeline=false; }
+    });
+  }
+
+  buildPath(points: TimelinePoint[]): string {
+    if(!points || !points.length) return '';
+    const width = this.chartWidth; const height = this.chartHeight; const max = Math.max(...points.map(p=>p.count));
+    if(max === 0) return '';
+    const pad = 30; // left axis space
+    const step = points.length > 1 ? (width - pad - 10) / (points.length -1) : width/2;
+    return points.map((p,i)=>{
+      const x = pad + i*step;
+      const y = this.yFor(p.count, max, height);
+      return (i===0?`M ${x} ${y}`:` L ${x} ${y}`);
+    }).join('');
+  }
+
+  private yFor(count: number, max: number, height: number) {
+    const pad = 10; const innerH = height - pad*2; return height - pad - (max===0?0:(count/max)*innerH);
+  }
+
+  private prepareCharts() {
+    if(!this.timeline) return;
+    this.usersChart = this.toChart(this.timeline.users);
+    this.propsChart = this.toChart(this.timeline.properties);
+    this.publishedChart = this.toChart(this.timeline.publishedProperties);
+  }
+
+  private toChart(points: TimelinePoint[]): ChartRenderable | undefined {
+    if(!points || !points.length) return undefined;
+    const max = Math.max(...points.map(p=>p.count));
+    const width = this.chartWidth; const height = this.chartHeight; const padLeft = 30; const padRight = 10; const padVert = 10;
+    const step = points.length>1 ? (width - padLeft - padRight) / (points.length-1) : width/2;
+    const pathParts: string[] = [];
+    const circles: ChartPoint[] = [];
+    points.forEach((p,i)=>{
+      const x = padLeft + i*step;
+      const y = this.yFor(p.count, max, height);
+      pathParts.push(i===0?`M ${x} ${y}`:`L ${x} ${y}`);
+      circles.push({ x, y, value: p.count, date: p.date });
+    });
+    const area = pathParts.join(' ') + ` L ${padLeft + (points.length-1)*step} ${height - padVert} L ${padLeft} ${height - padVert} Z`;
+    // y-axis ticks (4 divisions)
+    const ticks: AxisTick[] = [];
+    for(let i=0;i<=4;i++){
+      const v = Math.round((max/4)*i);
+      const yTick = this.yFor(v, max, height);
+      ticks.push({ value: v, y: yTick });
+    }
+    return { path: pathParts.join(' '), area, max, points: circles, firstDate: points[0].date, lastDate: points[points.length-1].date, yTicks: ticks };
+  }
+
+  // Hook into timeline loading completion
+  ngOnChanges() { this.prepareCharts(); }
+
+  // After timeline loaded
+  private finalizeTimeline() { this.prepareCharts(); }
 
   statusLabel(p: Property): string {
     const map: any = { 0: 'DRAFT', 1: 'PUBLISHED', 2: 'ARCHIVED'};
@@ -130,3 +219,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 }
 
 interface UserRow extends RawUser { propertyCount: number; isAdmin: boolean; }
+interface ChartPoint { x: number; y: number; value: number; date: string; }
+interface AxisTick { value: number; y: number; }
+interface ChartRenderable { path: string; area: string; max: number; points: ChartPoint[]; firstDate: string; lastDate: string; yTicks: AxisTick[]; }

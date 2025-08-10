@@ -51,10 +51,14 @@ export class AccountComponent {
       });
     } else {
       this.authService.register(email, password).subscribe({
-        next: () => {
-          this.isLoginMode = true;
-          this.form.reset();
+        next: (res) => {
           this.error = null;
+          // redirect depending on admin flag
+          if (res.isAdmin) {
+            this.router.navigate(['/admin']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
         },
         error: (err: any) => {
           this.error = err.error || 'Registration failed';

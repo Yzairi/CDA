@@ -14,3 +14,8 @@
 .users-table tbody tr:nth-child(even){ background:#f9fafb; }
 button.danger { background:#dc2626; color:#fff; border:1px solid #dc2626; margin-left:.4rem; }
 button.danger:hover { background:#b91c1c; }
+.charts { display:flex; flex-wrap:wrap; gap:1.5rem; margin-top:1.5rem; }
+.chart-box { background:#fff; border:1px solid #e5e7eb; padding:.75rem .9rem 1rem; border-radius:6px; width:560px; max-width:100%; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+.chart-box h3 { margin:0 0 .5rem; font-size:.9rem; font-weight:600; color:#374151; }
+.chart-box svg { width:100%; height:200px; background:linear-gradient(to bottom,#f8fafc,#ffffff); border:1px solid #e5e7eb; border-radius:4px; }
+.mini-legend { font-size:.65rem; color:#6b7280; margin-top:.35rem; }

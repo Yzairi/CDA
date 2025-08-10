@@ -8,15 +8,90 @@
 
   <section *ngIf="activeTab==='stats'" class="tab-content">
     <h2>Statistics</h2>
-    <div class="stats-grid">
-      <div class="stat-card">Total Properties <span class="value">--</span></div>
-      <div class="stat-card">Published <span class="value">--</span></div>
-      <div class="stat-card">Draft <span class="value">--</span></div>
-      <div class="stat-card">Archived <span class="value">--</span></div>
-      <div class="stat-card">Total Users <span class="value">--</span></div>
-      <div class="stat-card">Active Users <span class="value">--</span></div>
+    <div *ngIf="loadingStats" class="placeholder">Chargement stats...</div>
+    <div *ngIf="statsError" class="placeholder" style="color:#dc2626">{{ statsError }}</div>
+    <div class="stats-grid" *ngIf="!loadingStats && !statsError && stats">
+      <div class="stat-card">Total Properties <span class="value">{{ stats.totalProperties }}</span></div>
+      <div class="stat-card">Published <span class="value">{{ stats.publishedProperties }}</span></div>
+      <div class="stat-card">Draft <span class="value">{{ stats.draftProperties }}</span></div>
+      <div class="stat-card">Archived <span class="value">{{ stats.archivedProperties }}</span></div>
+      <div class="stat-card">Total Users <span class="value">{{ stats.totalUsers }}</span></div>
+      <div class="stat-card">Active Users <span class="value">{{ stats.activeUsers }}</span></div>
     </div>
-    <p class="placeholder">API wiring pending.</p>
+    <div class="charts" *ngIf="!loadingTimeline && !timelineError && timeline">
+      <div class="chart-box" *ngIf="usersChart">
+        <h3>Users Growth</h3>
+        <svg [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight" (mouseleave)="tooltip=undefined">
+          <defs>
+            <linearGradient id="usersArea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#2563eb" stop-opacity="0.35" />
+              <stop offset="100%" stop-color="#2563eb" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <g>
+            <path [attr.d]="usersChart.area" fill="url(#usersArea)" stroke="none"></path>
+            <path [attr.d]="usersChart.path" stroke="#2563eb" stroke-width="2" fill="none" />
+            <g *ngFor="let pt of usersChart.points">
+              <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="3" fill="#2563eb" (mouseenter)="tooltip=pt"></circle>
+            </g>
+            <g *ngFor="let t of usersChart.yTicks">
+              <line x1="30" [attr.y1]="t.y" [attr.x2]="chartWidth" [attr.y2]="t.y" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2 4"></line>
+              <text x="4" [attr.y]="t.y+4" font-size="10" fill="#6b7280">{{ t.value }}</text>
+            </g>
+            <text x="30" y="12" font-size="10" fill="#6b7280">{{ usersChart.firstDate }}</text>
+            <text [attr.x]="chartWidth-40" y="12" font-size="10" fill="#6b7280" text-anchor="end">{{ usersChart.lastDate }}</text>
+          </g>
+          <g *ngIf="tooltip">
+            <rect [attr.x]="tooltip.x-40" [attr.y]="tooltip.y-34" width="80" height="28" rx="4" fill="#111827" opacity="0.85"></rect>
+            <text [attr.x]="tooltip.x" [attr.y]="tooltip.y-20" font-size="10" fill="#fff" text-anchor="middle">{{ tooltip.date }}</text>
+            <text [attr.x]="tooltip.x" [attr.y]="tooltip.y-8" font-size="11" fill="#fff" font-weight="600" text-anchor="middle">{{ tooltip.value }}</text>
+          </g>
+        </svg>
+        <div class="mini-legend">Max: {{ usersChart.max }}</div>
+      </div>
+      <div class="chart-box" *ngIf="propsChart">
+        <h3>Properties & Published</h3>
+        <svg [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight" (mouseleave)="tooltip=undefined">
+          <defs>
+            <linearGradient id="propsArea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#16a34a" stop-opacity="0.35" />
+              <stop offset="100%" stop-color="#16a34a" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <g *ngIf="propsChart">
+            <path [attr.d]="propsChart.area" fill="url(#propsArea)"></path>
+            <path [attr.d]="propsChart.path" stroke="#16a34a" stroke-width="2" fill="none"></path>
+            <g *ngFor="let pt of propsChart.points">
+              <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="3" fill="#16a34a" (mouseenter)="tooltip=pt"></circle>
+            </g>
+          </g>
+          <g *ngIf="publishedChart">
+            <path [attr.d]="publishedChart.path" stroke="#f59e0b" stroke-width="2" fill="none"></path>
+            <g *ngFor="let pt of publishedChart.points">
+              <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="3" fill="#f59e0b" (mouseenter)="tooltip=pt"></circle>
+            </g>
+          </g>
+          <g *ngFor="let t of propsChart?.yTicks">
+            <line x1="30" [attr.y1]="t.y" [attr.x2]="chartWidth" [attr.y2]="t.y" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2 4"></line>
+            <text x="4" [attr.y]="t.y+4" font-size="10" fill="#6b7280">{{ t.value }}</text>
+          </g>
+          <text x="30" y="12" font-size="10" fill="#6b7280">{{ propsChart.firstDate }}</text>
+          <text [attr.x]="chartWidth-40" y="12" font-size="10" fill="#6b7280" text-anchor="end">{{ propsChart.lastDate }}</text>
+          <g *ngIf="tooltip">
+            <rect [attr.x]="tooltip.x-40" [attr.y]="tooltip.y-34" width="80" height="28" rx="4" fill="#111827" opacity="0.85"></rect>
+            <text [attr.x]="tooltip.x" [attr.y]="tooltip.y-20" font-size="10" fill="#fff" text-anchor="middle">{{ tooltip.date }}</text>
+            <text [attr.x]="tooltip.x" [attr.y]="tooltip.y-8" font-size="11" fill="#fff" font-weight="600" text-anchor="middle">{{ tooltip.value }}</text>
+          </g>
+        </svg>
+  <div class="mini-legend">Total max: {{ propsChart.max }} / Published max: {{ publishedChart?.max || '-' }}</div>
+        <div class="mini-legend colors">
+          <span class="legend-item"><span class="dot" style="background:#16a34a"></span> Total</span>
+          <span class="legend-item"><span class="dot" style="background:#f59e0b"></span> Publiées</span>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="loadingTimeline" class="placeholder">Chargement graphiques...</div>
+    <div *ngIf="timelineError" class="placeholder" style="color:#dc2626">{{ timelineError }}</div>
   </section>
 
   <section *ngIf="activeTab==='annonces'" class="tab-content">
