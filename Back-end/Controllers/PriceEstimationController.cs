@@ -37,8 +37,13 @@ namespace Back_end.Controllers
             {
                 Console.WriteLine($"[Estimate] Request: {request.Description} - IsForSale: {request.IsForSale}");
 
-                // Clé OpenAI
-                var openAiApiKey = "xxxxxxxxxxxxxxxxxxxxxxx";
+                // Récupérer la clé OpenAI depuis la configuration
+                var openAiApiKey = _config["OpenAI:ApiKey"];
+                
+                if (string.IsNullOrEmpty(openAiApiKey))
+                {
+                    return BadRequest("Clé API OpenAI non configurée. Veuillez ajouter votre clé dans appsettings.json");
+                }
 
                 var transactionType = request.IsForSale ? "vente" : "location";
                 var prompt = request.IsForSale ? 
@@ -161,8 +166,13 @@ JSON (valeurs en €/mois):
             {
                 Console.WriteLine($"[EnhanceDescription] Request: {request.Description}");
 
-                // Clé OpenAI
-                var openAiApiKey = "xxxxxxxxxxx";
+                // Récupérer la clé OpenAI depuis la configuration
+                var openAiApiKey = _config["OpenAI:ApiKey"];
+                
+                if (string.IsNullOrEmpty(openAiApiKey))
+                {
+                    return BadRequest("Clé API OpenAI non configurée. Veuillez ajouter votre clé dans appsettings.json");
+                }
 
                 var prompt = $@"Tu es un expert en rédaction d'annonces immobilières. 
 
