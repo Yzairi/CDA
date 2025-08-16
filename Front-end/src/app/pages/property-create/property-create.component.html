@@ -2,72 +2,96 @@
   <h2>Créer une annonce</h2>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="row">
-      <label>Titre</label>
-      <input type="text" formControlName="title" />
-      <div class="error" *ngIf="submitted && f['title'].errors">Titre requis (max 120 caractères)</div>
-    </div>
-
-    <div class="row">
-      <label>Description</label>
-      <textarea formControlName="description" rows="4"></textarea>
-      <div class="error" *ngIf="submitted && f['description'].errors">Min 10 caractères</div>
-    </div>
-
-    <div class="row">
-      <label>Type</label>
-      <select formControlName="type">
-        <option value="" disabled>-- Choisir --</option>
-        <option *ngFor="let t of types" [value]="t">{{ t }}</option>
-      </select>
-      <div class="error" *ngIf="submitted && f['type'].errors">Type requis</div>
-    </div>
-
-    <div class="row">
-      <label>Prix (€)</label>
-      <input type="number" formControlName="price" />
-      <div class="error" *ngIf="submitted && f['price'].errors">Prix > 0 requis</div>
-    </div>
-
-    <div class="row">
-      <label>Surface (m²)</label>
-      <input type="number" formControlName="surface" />
-    </div>
-
-    <fieldset formGroupName="address">
-      <legend>Adresse</legend>
-      <div class="row">
-        <label>Rue</label>
-        <input type="text" formControlName="street" />
-        <div class="error" *ngIf="submitted && addressGroup['street'].errors">Requis</div>
+    <div class="form-grid">
+      <!-- Titre et Type -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Titre de l'annonce</label>
+          <input type="text" class="form-input" formControlName="title" placeholder="Ex: Appartement lumineux centre-ville" />
+          <div class="error" *ngIf="submitted && f['title'].errors">Titre requis (max 120 caractères)</div>
+        </div>
+        <div class="form-group">
+          <label>Type de bien</label>
+          <select class="form-select" formControlName="type">
+            <option value="" disabled>-- Sélectionner le type --</option>
+            <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+          </select>
+          <div class="error" *ngIf="submitted && f['type'].errors">Type requis</div>
+        </div>
       </div>
-      <div class="row">
-        <label>Ville</label>
-        <input type="text" formControlName="city" />
-        <div class="error" *ngIf="submitted && addressGroup['city'].errors">Requis</div>
-      </div>
-      <div class="row">
-        <label>Code Postal</label>
-        <input type="text" formControlName="zipCode" />
-        <div class="error" *ngIf="submitted && addressGroup['zipCode'].errors">Format invalide</div>
-      </div>
-    </fieldset>
 
-    <div class="row">
-      <label>Images (optionnel)</label>
-      <input type="file" (change)="onFileSelected($event)" accept="image/*" multiple />
-    </div>
-    <div class="previews" *ngIf="previews.length">
-      <div class="preview-item" *ngFor="let p of previews; let i = index">
-        <img [src]="p.url" [alt]="p.name" />
-        <button type="button" (click)="removeImage(i)">×</button>
+      <!-- Prix et Surface -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Prix (€)</label>
+          <input type="number" class="form-input" formControlName="price" placeholder="Ex: 250000" />
+          <div class="error" *ngIf="submitted && f['price'].errors">Prix supérieur à 0 requis</div>
+        </div>
+        <div class="form-group">
+          <label>Surface (m²)</label>
+          <input type="number" class="form-input" formControlName="surface" placeholder="Ex: 85" />
+        </div>
       </div>
-    </div>
 
-    <button type="submit">Créer</button>
+      <!-- Description -->
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Description</label>
+          <textarea class="form-textarea" formControlName="description" placeholder="Décrivez votre bien en détail..."></textarea>
+          <div class="error" *ngIf="submitted && f['description'].errors">Minimum 10 caractères requis</div>
+        </div>
+      </div>
+
+      <!-- Section Adresse -->
+      <div class="address-section" formGroupName="address">
+        <div class="section-title">Adresse du bien</div>
+        <div class="form-grid">
+          <div class="form-row single">
+            <div class="form-group">
+              <label>Rue et numéro</label>
+              <input type="text" class="form-input" formControlName="street" placeholder="Ex: 123 Rue de la République" />
+              <div class="error" *ngIf="submitted && addressGroup['street'].errors">Adresse requise</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Ville</label>
+              <input type="text" class="form-input" formControlName="city" placeholder="Ex: Paris" />
+              <div class="error" *ngIf="submitted && addressGroup['city'].errors">Ville requise</div>
+            </div>
+            <div class="form-group">
+              <label>Code postal</label>
+              <input type="text" class="form-input" formControlName="zipCode" placeholder="Ex: 75001" />
+              <div class="error" *ngIf="submitted && addressGroup['zipCode'].errors">Code postal invalide</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Images -->
+      <div class="images-section">
+        <div class="section-title">Photos du bien</div>
+        <p style="color: var(--create-text-muted); margin-bottom: 1rem; font-size: 0.85rem;">Ajoutez des photos pour mettre en valeur votre bien (optionnel)</p>
+        <input type="file" id="fileInput" class="file-input" (change)="onFileSelected($event)" accept="image/*" multiple />
+        <label for="fileInput" class="file-input-label">
+          Choisir des photos
+        </label>
+        
+        <div class="previews" *ngIf="previews.length">
+          <div class="preview-item" *ngFor="let p of previews; let i = index">
+            <img [src]="p.url" [alt]="p.name" />
+            <button type="button" class="remove-btn" (click)="removeImage(i)">×</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bouton de soumission -->
+      <button type="submit" class="submit-btn" [disabled]="form.invalid">
+        Créer l'annonce
+      </button>
+    </div>
   </form>
 
   <div class="success" *ngIf="successMessage">{{ successMessage }}</div>
-  <div class="error" *ngIf="errorMessage && !successMessage">{{ errorMessage }}</div>
-
+  <div class="error-message" *ngIf="errorMessage && !successMessage">{{ errorMessage }}</div>
 </div>

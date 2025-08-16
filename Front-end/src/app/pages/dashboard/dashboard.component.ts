@@ -27,7 +27,7 @@ import { ConfirmationService } from '../../services/confirmation.service';
       <div *ngIf="loading" class="state">Chargement...</div>
       <div *ngIf="error" class="state error">{{ error }}</div>
       <div class="my-grid" *ngIf="!loading && !error && myProperties.length; else empty">
-        <div class="item" *ngFor="let p of myProperties">
+        <div class="item" [class.editing]="editingId === p.id" *ngFor="let p of myProperties">
           <ng-container *ngIf="editingId !== p.id; else editFormTpl">
             <app-property-card [property]="p" [showStatus]="true"></app-property-card>
             <div class="actions">
@@ -40,39 +40,71 @@ import { ConfirmationService } from '../../services/confirmation.service';
           <ng-template #editFormTpl>
             <form [formGroup]="editForm" (ngSubmit)="saveEdit(p)" class="edit-form">
               <div class="grid">
-                <label>Titre<input type="text" formControlName="title" /></label>
-                <label>Type<input type="text" formControlName="type" /></label>
-                <label>Prix<input type="number" formControlName="price" /></label>
-                <label>Surface<input type="number" formControlName="surface" /></label>
-                <label class="full">Description<textarea rows="3" formControlName="description"></textarea></label>
+                <label>
+                  Titre de l'annonce
+                  <input type="text" formControlName="title" placeholder="Titre de votre annonce" />
+                </label>
+                <label>
+                  Type de bien
+                  <input type="text" formControlName="type" placeholder="Ex: Appartement, Maison..." />
+                </label>
+                <label>
+                  Prix (€)
+                  <input type="number" formControlName="price" placeholder="Prix en euros" />
+                </label>
+                <label>
+                  Surface (m²)
+                  <input type="number" formControlName="surface" placeholder="Surface en m²" />
+                </label>
+                <label class="full">
+                  Description détaillée
+                  <textarea rows="4" formControlName="description" placeholder="Décrivez votre bien en détail..."></textarea>
+                </label>
                 <fieldset class="full address-group" formGroupName="address">
-                  <legend>Adresse</legend>
-                  <label>Rue<input type="text" formControlName="street" /></label>
-                  <label>Ville<input type="text" formControlName="city" /></label>
-                  <label>Code Postal<input type="text" formControlName="zipCode" /></label>
+                  <legend>Adresse du bien</legend>
+                  <div class="grid">
+                    <label>
+                      Rue et numéro
+                      <input type="text" formControlName="street" placeholder="Ex: 123 Rue de la République" />
+                    </label>
+                    <label>
+                      Ville
+                      <input type="text" formControlName="city" placeholder="Ville" />
+                    </label>
+                    <label>
+                      Code postal
+                      <input type="text" formControlName="zipCode" placeholder="Code postal" />
+                    </label>
+                  </div>
                 </fieldset>
                 <div class="full images-block">
                   <div class="images-header">
-                    <strong>Images</strong>
+                    <strong>Gestion des photos</strong>
                     <input type="file" multiple (change)="onAddImages($event, p)" accept="image/*" />
                   </div>
                   <div class="images-grid" *ngIf="p.images?.length; else noImg">
                     <div class="img-item" *ngFor="let img of getImages(p); let i = index">
-                      <img [src]="img.url" alt="img" />
+                      <img [src]="img.url" alt="Photo {{i+1}}" />
                       <div class="img-actions">
-                        <button type="button" (click)="moveImage(p, i, -1)" [disabled]="i===0">↑</button>
-                        <button type="button" (click)="moveImage(p, i, 1)" [disabled]="i===p.images!.length-1">↓</button>
-                        <button type="button" class="danger" (click)="deleteImage(p, img)">✕</button>
+                        <button type="button" (click)="moveImage(p, i, -1)" [disabled]="i===0" title="Monter">↑</button>
+                        <button type="button" (click)="moveImage(p, i, 1)" [disabled]="i===p.images!.length-1" title="Descendre">↓</button>
+                        <button type="button" class="danger" (click)="deleteImage(p, img)" title="Supprimer">✕</button>
                       </div>
                     </div>
                   </div>
-                  <ng-template #noImg><div class="no-img">Aucune image</div></ng-template>
+                  <ng-template #noImg>
+                    <div class="no-img">Aucune photo ajoutée</div>
+                  </ng-template>
                   <div class="mini-state" *ngIf="imgError">{{ imgError }}</div>
                 </div>
               </div>
               <div class="actions inside">
-                <button type="submit" [disabled]="editForm.invalid || saving">Enregistrer</button>
-                <button type="button" (click)="cancelEdit()" [disabled]="saving">Annuler</button>
+                <button type="button" (click)="cancelEdit()" [disabled]="saving">
+                  Annuler
+                </button>
+                <button type="submit" [disabled]="editForm.invalid || saving">
+                  Enregistrer les modifications
+                </button>
               </div>
               <div class="mini-state" *ngIf="saveError">{{ saveError }}</div>
             </form>
