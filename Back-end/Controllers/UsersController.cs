@@ -138,6 +138,16 @@ namespace Back_end.Controllers
             return NoContent();
         }
 
+        [HttpGet("{id}/email")]
+        public async Task<ActionResult<string>> GetUserEmail(Guid id)
+        {
+            var user = await _repository.GetByIdAsync(id);
+            if (user == null)
+                return NotFound();
+
+            return Ok(user.Email);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

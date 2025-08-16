@@ -205,4 +205,8 @@ export class PropertyService {
     }
     return this.deleteImage(propertyId, imageId);
   }
+
+  getUserEmail(userId: string): Observable<string> {
+    return this.http.get(`http://localhost:5172/api/Users/${userId}/email`, { responseType: 'text' });
+  }
 }
