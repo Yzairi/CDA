@@ -1,0 +1,21 @@
+<div class="card">
+  <div class="image-wrapper" *ngIf="property.images && property.images.length">
+    <img [src]="property.images[0].url" alt="image" class="thumb" />
+  </div>
+  <div class="card-header">
+    <h3 class="title" title="{{ property.title }}">{{ property.title }}</h3>
+    <span class="price">{{ priceFormatted }}</span>
+  </div>
+  <div class="meta">
+    <span class="type">{{ property.type }}</span>
+    <span class="surface" *ngIf="property.surface">{{ surfaceLabel }}</span>
+    <span *ngIf="showStatus && displayStatus(property.status) !== 'PUBLISHED'" class="status status-{{ statusClass(property.status) }}">{{ displayStatus(property.status) }}</span>
+  </div>
+  <p class="description">{{ property.description }}</p>
+  <div class="address">
+    <span>{{ property.address.street }}, {{ property.address.zipCode }} {{ property.address.city }}</span>
+  </div>
+  <div class="footer">
+    <small>Créé le {{ property.createdAt | date:'short' }}</small>
+  </div>
+</div>

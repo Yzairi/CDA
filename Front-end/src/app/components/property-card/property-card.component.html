@@ -1,21 +1,65 @@
-<div class="card">
-  <div class="image-wrapper" *ngIf="property.images && property.images.length">
-    <img [src]="property.images[0].url" alt="image" class="thumb" />
+<div class="card-enhanced">
+  <!-- Section informations -->
+  <div class="property-info">
+    <div class="card-header-enhanced">
+      <h3 class="title-enhanced" title="{{ property.title }}">{{ property.title }}</h3>
+      <span class="price-enhanced">{{ priceFormatted }}</span>
+    </div>
+
+    <div class="property-details">
+      <div class="detail-row">
+        <span class="detail-label">Type:</span>
+        <span class="detail-value">{{ property.type }}</span>
+      </div>
+      
+      <div class="detail-row" *ngIf="property.surface">
+        <span class="detail-label">Surface:</span>
+        <span class="detail-value">{{ surfaceLabel }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <span class="detail-label">Adresse:</span>
+        <span class="detail-value">📍 {{ property.address.street }}, {{ property.address.zipCode }} {{ property.address.city }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <span class="detail-label">Contact:</span>
+        <span class="detail-value">👤 {{ property.user?.email || 'Email en cours de chargement...' }}</span>
+      </div>
+    </div>
+
+    <div class="description-enhanced">
+      <p>{{ property.description }}</p>
+    </div>
+
+    <div class="footer-enhanced">
+      <div class="created-date">📅 Créé le {{ property.createdAt | date:'short' }}</div>
+      <div *ngIf="showStatus && displayStatus(property.status) !== 'PUBLISHED'" 
+           class="status-badge status-{{ statusClass(property.status) }}">
+        {{ displayStatus(property.status) }}
+      </div>
+    </div>
   </div>
-  <div class="card-header">
-    <h3 class="title" title="{{ property.title }}">{{ property.title }}</h3>
-    <span class="price">{{ priceFormatted }}</span>
-  </div>
-  <div class="meta">
-    <span class="type">{{ property.type }}</span>
-    <span class="surface" *ngIf="property.surface">{{ surfaceLabel }}</span>
-    <span *ngIf="showStatus && displayStatus(property.status) !== 'PUBLISHED'" class="status status-{{ statusClass(property.status) }}">{{ displayStatus(property.status) }}</span>
-  </div>
-  <p class="description">{{ property.description }}</p>
-  <div class="address">
-    <span>{{ property.address.street }}, {{ property.address.zipCode }} {{ property.address.city }}</span>
-  </div>
-  <div class="footer">
-    <small>Créé le {{ property.createdAt | date:'short' }}</small>
+
+  <!-- Section images avec carousel -->
+  <div class="images-section">
+    <div class="main-image">
+      <img *ngIf="property.images && property.images.length > 0; else noMainImage" 
+           [src]="property.images[currentImageIndex].url" 
+           [alt]="property.title" 
+           class="main-thumb" />
+      <ng-template #noMainImage>
+        <div class="no-image-placeholder">📷 Aucune image</div>
+      </ng-template>
+    </div>
+    
+    <div *ngIf="property.images && property.images.length > 1" class="image-carousel">
+      <div *ngFor="let img of property.images; let i = index" 
+           class="carousel-thumbnail" 
+           [class.active]="currentImageIndex === i"
+           (click)="setCurrentImage(i)">
+        <img [src]="img.url" [alt]="'Photo ' + (i+1)" />
+      </div>
+    </div>
   </div>
 </div>

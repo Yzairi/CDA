@@ -3,18 +3,15 @@ import { CommonModule } from '@angular/common';
 import { Property } from '../../services/property.service';
 
 @Component({
-  selector: 'app-property-card',
+  selector: 'app-property-card-user',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './property-card.component.html',
-  styleUrls: ['./property-card.component.css']
+  templateUrl: './property-card-user.component.html',
+  styleUrls: ['./property-card-user.component.css']
 })
-export class PropertyCardComponent {
+export class PropertyCardUserComponent {
   @Input() property!: Property;
   @Input() showStatus: boolean = true;
-  
-  // Gestion du carousel d'images
-  currentImageIndex: number = 0;
 
   get priceFormatted(): string {
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(this.property.price);
@@ -22,11 +19,6 @@ export class PropertyCardComponent {
 
   get surfaceLabel(): string {
     return this.property.surface ? this.property.surface + ' m²' : '—';
-  }
-
-  // Méthode pour changer l'image actuelle
-  setCurrentImage(index: number): void {
-    this.currentImageIndex = index;
   }
 
   private statusMap: Record<string | number, string> = {

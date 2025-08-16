@@ -30,6 +30,7 @@ export interface Property extends CreatePropertyPayload {
   createdAt: string;
   publishedAt?: string | null;
   images?: { id: string; url: string; order: number }[];
+  user?: { email: string }; // Email de l'annonceur
 }
 
 @Injectable({ providedIn: 'root' })

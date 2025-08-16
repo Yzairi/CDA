@@ -4,14 +4,14 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { PropertyCreateComponent } from '../property-create/property-create.component';
 import { PropertyService, Property } from '../../services/property.service';
-import { PropertyCardComponent } from '../../components/property-card/property-card.component';
+import { PropertyCardUserComponent } from '../../components/property-card-user/property-card-user.component';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConfirmationService } from '../../services/confirmation.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, PropertyCreateComponent, PropertyCardComponent, ReactiveFormsModule],
+  imports: [CommonModule, PropertyCreateComponent, PropertyCardUserComponent, ReactiveFormsModule],
   template: `
     <div class="dashboard-container">
       <div class="toolbar">
@@ -29,7 +29,7 @@ import { ConfirmationService } from '../../services/confirmation.service';
       <div class="my-grid" *ngIf="!loading && !error && myProperties.length; else empty">
         <div class="item" [class.editing]="editingId === p.id" *ngFor="let p of myProperties">
           <ng-container *ngIf="editingId !== p.id; else editFormTpl">
-            <app-property-card [property]="p" [showStatus]="true"></app-property-card>
+            <app-property-card-user [property]="p" [showStatus]="true"></app-property-card-user>
             <div class="actions">
               <button (click)="startEdit(p)">Modifier</button>
               <button (click)="archive(p)" *ngIf="statusOf(p) !== 'ARCHIVED'">Archiver</button>
