@@ -1,0 +1,131 @@
+.notification-container {
+  position: fixed;
+  top: 80px;
+  right: 1rem;
+  z-index: 1000;
+  max-width: 400px;
+  width: 100%;
+}
+
+.notification {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  animation: slideIn 0.3s ease-out;
+  transition: all 0.2s ease;
+  background: white;
+  border-left: 4px solid;
+}
+
+.notification:hover {
+  transform: translateX(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.notification-success {
+  border-left-color: #10b981;
+}
+
+.notification-error {
+  border-left-color: #ef4444;
+}
+
+.notification-warning {
+  border-left-color: #f59e0b;
+}
+
+.notification-info {
+  border-left-color: #3b82f6;
+}
+
+.notification-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+}
+
+.notification-success .notification-icon {
+  background-color: #10b981;
+}
+
+.notification-error .notification-icon {
+  background-color: #ef4444;
+}
+
+.notification-warning .notification-icon {
+  background-color: #f59e0b;
+}
+
+.notification-info .notification-icon {
+  background-color: #3b82f6;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 0.25rem;
+  color: #1f2937;
+}
+
+.notification-message {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #6b7280;
+}
+
+.notification-close {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: #9ca3af;
+  transition: color 0.2s ease;
+}
+
+.notification-close:hover {
+  color: #1f2937;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 520px) {
+  .notification-container {
+    right: 0.5rem;
+    left: 0.5rem;
+    max-width: none;
+  }
+  
+  .notification {
+    padding: 0.75rem;
+  }
+}

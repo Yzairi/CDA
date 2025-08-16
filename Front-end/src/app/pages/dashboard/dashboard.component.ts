@@ -6,6 +6,7 @@ import { PropertyCreateComponent } from '../property-create/property-create.comp
 import { PropertyService, Property } from '../../services/property.service';
 import { PropertyCardComponent } from '../../components/property-card/property-card.component';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ConfirmationService } from '../../services/confirmation.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -96,7 +97,7 @@ export class DashboardComponent implements OnInit {
   saving = false;
   saveError = '';
 
-  constructor(public authService: AuthService, private propertyService: PropertyService, private fb: FormBuilder, private router: Router) {}
+  constructor(public authService: AuthService, private propertyService: PropertyService, private fb: FormBuilder, private router: Router, private confirmationService: ConfirmationService) {}
 
   ngOnInit(): void {
     if (this.authService.isAdmin()) {
@@ -174,9 +175,28 @@ export class DashboardComponent implements OnInit {
 
   afterAction() { this.load(); }
   setDraft(p: Property) { this.propertyService.draft(p.id).subscribe(() => this.afterAction()); }
-  publish(p: Property) { this.propertyService.publish(p.id).subscribe(() => this.afterAction()); }
-  archive(p: Property) { this.propertyService.archive(p.id).subscribe(() => this.afterAction()); }
-  remove(p: Property) { if(confirm('Supprimer cette annonce ?')) this.propertyService.delete(p.id).subscribe(() => this.afterAction()); }
+  
+  async publish(p: Property) { 
+    const confirmed = await this.confirmationService.confirmPublish(p.title);
+    if (confirmed) {
+      this.propertyService.publish(p.id).subscribe(() => this.afterAction());
+    }
+  }
+  
+  async archive(p: Property) { 
+    const confirmed = await this.confirmationService.confirmArchive(p.title);
+    if (confirmed) {
+      this.propertyService.archive(p.id).subscribe(() => this.afterAction());
+    }
+  }
+  
+  async remove(p: Property) { 
+    const confirmed = await this.confirmationService.confirmDelete(p.title);
+    if (confirmed) {
+      this.propertyService.delete(p.id).subscribe(() => this.afterAction());
+    }
+  }
+  
   restore(p: Property) { this.propertyService.publish(p.id).subscribe(() => this.afterAction()); }
 
   // modify button now only handles status switching kept if needed elsewhere
@@ -217,8 +237,10 @@ export class DashboardComponent implements OnInit {
     this.propertyService.reorderImages(p.id, ids).subscribe({ error: ()=>{} });
   }
 
-  deleteImage(p: Property, img: {id:string}) {
-    if (!confirm('Supprimer cette image ?')) return;
+  async deleteImage(p: Property, img: {id:string}) {
+    const confirmed = await this.confirmationService.confirmDelete('cette image');
+    if (!confirmed) return;
+    
     this.propertyService.deleteImage(p.id, img.id).subscribe({
       next: () => { if(p.images) p.images = p.images.filter(i=> i.id!==img.id).map((i,idx)=> ({...i, order: idx})); this.syncReorder(p); },
       error: err => { this.imgError = err.error || 'Erreur suppression image'; }

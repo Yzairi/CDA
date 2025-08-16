@@ -6,6 +6,7 @@ import { PropertyService, Property } from '../../services/property.service';
 import { StatsService, StatsSummary } from '../../services/stats.service';
 import { ChartsService, TimelineResponse, TimelinePoint } from '../../services/charts.service';
 import { AuthService } from '../../services/auth.service';
+import { ConfirmationService } from '../../services/confirmation.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -47,7 +48,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
               private statsService: StatsService,
               private charts: ChartsService,
               private auth: AuthService,
-              private router: Router) {}
+              private router: Router,
+              private confirmationService: ConfirmationService) {}
 
   ngOnInit(): void {
     // redirect immediately if not admin (in case of manual navigation)
@@ -154,10 +156,33 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     return (map[p.status] || p.status || '').toString();
   }
 
-  publish(p: Property) { this.propAction(p, this.propertyService.publish.bind(this.propertyService)); }
-  archive(p: Property) { this.propAction(p, this.propertyService.archive.bind(this.propertyService)); }
-  draft(p: Property) { this.propAction(p, this.propertyService.draft.bind(this.propertyService)); }
-  delete(p: Property) { if(!confirm('Supprimer cette annonce ?')) return; this.propAction(p, this.propertyService.delete.bind(this.propertyService), true); }
+  async publish(p: Property) { 
+    const confirmed = await this.confirmationService.confirmPublish(p.title);
+    if (confirmed) {
+      this.propAction(p, this.propertyService.publish.bind(this.propertyService));
+    }
+  }
+
+  async archive(p: Property) { 
+    const confirmed = await this.confirmationService.confirmArchive(p.title);
+    if (confirmed) {
+      this.propAction(p, this.propertyService.archive.bind(this.propertyService));
+    }
+  }
+
+  async draft(p: Property) { 
+    const confirmed = await this.confirmationService.confirmPropertyStatusChange(p.title, 'draft');
+    if (confirmed) {
+      this.propAction(p, this.propertyService.draft.bind(this.propertyService));
+    }
+  }
+
+  async delete(p: Property) { 
+    const confirmed = await this.confirmationService.confirmDelete(p.title);
+    if (confirmed) {
+      this.propAction(p, this.propertyService.delete.bind(this.propertyService), true);
+    }
+  }
 
   private propAction(p: Property, fn: (id: string)=>any, removeAfter=false) {
     this.savingPropIds.add(p.id);
@@ -198,8 +223,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  toggleAdmin(u: UserRow) {
+  async toggleAdmin(u: UserRow) {
     const target = !u.isAdmin;
+    const newRole = target ? 'ADMIN' : 'ADVERTISER';
+    const confirmed = await this.confirmationService.confirmUserRoleChange(u.email, newRole);
+    
+    if (!confirmed) return;
+
     this.savingUserIds.add(u.id);
     this.userService.updateRoleStatus(u.id, target, u.status).subscribe({
       next: () => { u.isAdmin = target; u.role = target ? 'ADMIN' : 'ADVERTISER'; this.savingUserIds.delete(u.id); },
@@ -207,8 +237,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteUser(u: UserRow) {
-    if(!confirm('Supprimer cet utilisateur ?')) return;
+  async deleteUser(u: UserRow) {
+    const confirmed = await this.confirmationService.confirmUserDeletion(u.email, u.propertyCount);
+    
+    if (!confirmed) return;
+
     this.savingUserIds.add(u.id);
     this.userService.delete(u.id).subscribe({
       next: () => { this.users = this.users.filter(x => x.id !== u.id); },

@@ -1,8 +1,10 @@
 import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
+import { NotificationService } from './notification.service';
+import { ConfirmationService } from './confirmation.service';
 
 interface User {
   id: string;
@@ -30,7 +32,9 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) platformId: Object,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService,
+    private confirmationService: ConfirmationService
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
     if (this.isBrowser) {
@@ -49,7 +53,14 @@ export class AuthService {
 
   login(email: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/Users/login`, { email, password }).pipe(
-      tap(res => this.persistAuth(res))
+      tap(res => {
+        this.persistAuth(res);
+        this.notificationService.success('Connexion réussie ! Bienvenue.');
+      }),
+      catchError(error => {
+        this.notificationService.error('Échec de la connexion. Vérifiez vos identifiants.');
+        return throwError(error);
+      })
     );
   }
 
@@ -62,12 +73,18 @@ export class AuthService {
     this.currentUserSubject.next(user);
   }
 
-  logout(): void {
+  async logout(): Promise<void> {
+    const shouldLogout = await this.confirmationService.confirmLogout();
+    if (!shouldLogout) {
+      return;
+    }
+
     if (this.isBrowser) {
       localStorage.removeItem('currentUser');
       localStorage.removeItem('access_token');
     }
     this.currentUserSubject.next(null);
+    this.notificationService.info('Vous avez été déconnecté avec succès.');
     try {
       const currentUrl = this.router.url;
   if (currentUrl.startsWith('/dashboard') || currentUrl.startsWith('/backoffice') || currentUrl.startsWith('/admin')) {
