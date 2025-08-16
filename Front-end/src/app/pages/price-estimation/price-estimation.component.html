@@ -1,0 +1,78 @@
+<div class="estimation-container">
+  <div class="estimation-card">
+    <div class="card-header">
+      <h2>✨ Estimation IA</h2>
+      <p>Obtenez une estimation de prix instantanée grâce à l'intelligence artificielle</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="estimation-form">
+      <div class="form-group">
+        <label for="description">Description du bien</label>
+        <textarea
+          id="description"
+          [(ngModel)]="estimationRequest.description"
+          name="description"
+          placeholder="Décrivez votre bien : type, ville, quartier, surface, nombre de pièces, état, équipements..."
+          rows="4"
+          required>
+        </textarea>
+        <small class="form-hint">Ex: Appartement 3 pièces 75m² à Paris 15ème, bon état, balcon, proche métro</small>
+      </div>
+
+      <div class="form-group">
+        <label class="switch-label">Type d'estimation</label>
+        <div class="switch-container">
+          <label class="switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="estimationRequest.isForSale"
+              name="isForSale">
+            <span class="slider"></span>
+          </label>
+          <span class="switch-text">
+            {{ estimationRequest.isForSale ? 'Vente' : 'Location' }}
+          </span>
+        </div>
+      </div>
+
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <button 
+        type="submit" 
+        [disabled]="isLoading"
+        class="estimate-btn">
+        <span *ngIf="!isLoading">Estimer le prix</span>
+        <span *ngIf="isLoading">
+          <i class="spinner"></i>
+          Estimation en cours...
+        </span>
+      </button>
+    </form>
+
+    <div *ngIf="estimationResult" class="result-section">
+      <h3>Résultat de l'estimation</h3>
+      <div class="result-card">
+        <div class="price-display">
+          <span class="price">{{ estimationResult.estimatedPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
+          <span class="price-type">{{ estimationRequest.isForSale ? 'Vente' : 'Location mensuelle' }}</span>
+        </div>
+        <div class="price-range">
+          <div class="range-item">
+            <span class="range-label">Minimum :</span>
+            <span class="range-value">{{ estimationResult.minPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="range-item">
+            <span class="range-label">Maximum :</span>
+            <span class="range-value">{{ estimationResult.maxPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+        <div class="explanation">
+          <h4>Explication</h4>
+          <p>{{ estimationResult.explanation }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

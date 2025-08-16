@@ -6,6 +6,7 @@
   <nav class="nav" id="mainNav" (click)="closeMenuOnNavigate($event)">
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Home</a>
     <a routerLink="/announcements" routerLinkActive="active" class="nav-link">Announcements</a>
+    <a routerLink="/estimation" routerLinkActive="active" class="nav-link">Estimation IA</a>
     <ng-container *ngIf="!auth.isLoggedIn(); else loggedIn">
       <a routerLink="/account" routerLinkActive="active" class="nav-link">Compte</a>
     </ng-container>

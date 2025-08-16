@@ -22,6 +22,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<PropertyRepository>();
 builder.Services.AddScoped<UserRepository>();
 
+// Add HttpClient for API calls
+builder.Services.AddHttpClient();
+
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
