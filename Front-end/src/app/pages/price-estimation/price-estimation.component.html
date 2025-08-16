@@ -1,76 +1,137 @@
 <div class="estimation-container">
   <div class="estimation-card">
     <div class="card-header">
-      <h2>✨ Estimation IA</h2>
-      <p>Obtenez une estimation de prix instantanée grâce à l'intelligence artificielle</p>
+      <h2>🤖 Assistant IA Immobilier</h2>
+      <p>Estimez vos biens et améliorez vos descriptions grâce à l'intelligence artificielle</p>
     </div>
 
-    <form (ngSubmit)="onSubmit()" class="estimation-form">
-      <div class="form-group">
-        <label for="description">Description du bien</label>
-        <textarea
-          id="description"
-          [(ngModel)]="estimationRequest.description"
-          name="description"
-          placeholder="Décrivez votre bien : type, ville, quartier, surface, nombre de pièces, état, équipements..."
-          rows="4"
-          required>
-        </textarea>
-        <small class="form-hint">Ex: Appartement 3 pièces 75m² à Paris 15ème, bon état, balcon, proche métro</small>
-      </div>
-
-      <div class="form-group">
-        <label class="switch-label">Type d'estimation</label>
-        <div class="switch-container">
-          <label class="switch">
-            <input 
-              type="checkbox" 
-              [(ngModel)]="estimationRequest.isForSale"
-              name="isForSale">
-            <span class="slider"></span>
-          </label>
-          <span class="switch-text">
-            {{ estimationRequest.isForSale ? 'Vente' : 'Location' }}
-          </span>
-        </div>
-      </div>
-
-      <div *ngIf="error" class="error-message">
-        {{ error }}
-      </div>
-
+    <!-- Onglets -->
+    <div class="tabs-container">
       <button 
-        type="submit" 
-        [disabled]="isLoading"
-        class="estimate-btn">
-        <span *ngIf="!isLoading">Estimer le prix</span>
-        <span *ngIf="isLoading">
-          <i class="spinner"></i>
-          Estimation en cours...
-        </span>
+        class="tab-button" 
+        [class.active]="activeTab === 'estimation'"
+        (click)="switchTab('estimation')">
+        💰 Estimation de prix
       </button>
-    </form>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'enhancement'"
+        (click)="switchTab('enhancement')">
+        ✨ Amélioration de description
+      </button>
+    </div>
 
-    <div *ngIf="estimationResult" class="result-section">
-      <h3>Résultat de l'estimation</h3>
-      <div class="result-card">
-        <div class="price-display">
-          <span class="price">{{ estimationResult.estimatedPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
-          <span class="price-type">{{ estimationRequest.isForSale ? 'Vente' : 'Location mensuelle' }}</span>
+    <!-- Contenu Estimation -->
+    <div *ngIf="activeTab === 'estimation'" class="tab-content">
+      <form (ngSubmit)="onSubmit()" class="estimation-form">
+        <div class="form-group">
+          <label for="description">Description du bien</label>
+          <textarea
+            id="description"
+            [(ngModel)]="estimationRequest.description"
+            name="description"
+            placeholder="Décrivez votre bien : type, ville, quartier, surface, nombre de pièces, état, équipements..."
+            rows="4"
+            required>
+          </textarea>
+          <small class="form-hint">Ex: Appartement 3 pièces 75m² à Paris 15ème, bon état, balcon, proche métro</small>
         </div>
-        <div class="price-range">
-          <div class="range-item">
-            <span class="range-label">Minimum :</span>
-            <span class="range-value">{{ estimationResult.minPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
-          </div>
-          <div class="range-item">
-            <span class="range-label">Maximum :</span>
-            <span class="range-value">{{ estimationResult.maxPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
+
+        <div class="form-group">
+          <label class="switch-label">Type d'estimation</label>
+          <div class="switch-container">
+            <label class="switch">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="estimationRequest.isForSale"
+                name="isForSale">
+              <span class="slider"></span>
+            </label>
+            <span class="switch-text">
+              {{ estimationRequest.isForSale ? 'Vente' : 'Location' }}
+            </span>
           </div>
         </div>
-        <div class="explanation">
-          <h4>Explication</h4>
-          <p>{{ estimationResult.explanation }}</p>
+
+        <div *ngIf="error" class="error-message">
+          {{ error }}
+        </div>
+
+        <button 
+          type="submit" 
+          [disabled]="isLoading"
+          class="estimate-btn">
+          <span *ngIf="!isLoading">Estimer le prix</span>
+          <span *ngIf="isLoading">
+            <i class="spinner"></i>
+            Estimation en cours...
+          </span>
+        </button>
+      </form>
+
+      <div *ngIf="estimationResult" class="result-section">
+        <h3>Résultat de l'estimation</h3>
+        <div class="result-card">
+          <div class="price-display">
+            <span class="price">{{ estimationResult.estimatedPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
+            <span class="price-type">{{ estimationRequest.isForSale ? 'Vente' : 'Location mensuelle' }}</span>
+          </div>
+          <div class="price-range">
+            <div class="range-item">
+              <span class="range-label">Minimum :</span>
+              <span class="range-value">{{ estimationResult.minPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
+            </div>
+            <div class="range-item">
+              <span class="range-label">Maximum :</span>
+              <span class="range-value">{{ estimationResult.maxPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
+            </div>
+          </div>
+          <div class="explanation">
+            <h4>Explication</h4>
+            <p>{{ estimationResult.explanation }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenu Amélioration -->
+    <div *ngIf="activeTab === 'enhancement'" class="tab-content">
+      <div class="enhancement-form">
+        <div class="form-group">
+          <label for="originalDesc">Description à améliorer</label>
+          <textarea
+            id="originalDesc"
+            [(ngModel)]="originalDescription"
+            placeholder="Saisissez votre description basique..."
+            rows="4">
+          </textarea>
+          <small class="form-hint">Ex: Appartement 3 pièces 75m² à Paris 15ème, bon état, balcon, proche métro</small>
+        </div>
+
+        <div *ngIf="error" class="error-message">
+          {{ error }}
+        </div>
+
+        <button 
+          type="button" 
+          class="enhance-btn" 
+          (click)="enhanceDescription()" 
+          [disabled]="isEnhancing || !originalDescription.trim()">
+          <span *ngIf="!isEnhancing">✨ Améliorer la description</span>
+          <span *ngIf="isEnhancing">
+            <i class="spinner"></i>
+            Amélioration en cours...
+          </span>
+        </button>
+
+        <div *ngIf="enhancedDescription" class="enhanced-result">
+          <h3>Description améliorée</h3>
+          <div class="enhanced-text">
+            {{ enhancedDescription }}
+          </div>
+          <button class="copy-btn" (click)="copyEnhancedDescription()">
+            📋 Copier
+          </button>
         </div>
       </div>
     </div>

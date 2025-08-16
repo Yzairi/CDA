@@ -27,6 +27,9 @@ namespace Back_end.Controllers
             decimal MaxPrice,
             string Explanation);
 
+        public record DescriptionRequest(string Description);
+        public record DescriptionResponse(string EnhancedDescription);
+
         [HttpPost("estimate")]
         public async Task<ActionResult<EstimationResponse>> EstimatePrice(EstimationRequest request)
         {
@@ -35,7 +38,7 @@ namespace Back_end.Controllers
                 Console.WriteLine($"[Estimate] Request: {request.Description} - IsForSale: {request.IsForSale}");
 
                 // Clé OpenAI
-                var openAiApiKey = "xxxxxxx";
+                var openAiApiKey = "xxxxxxxxxxxxxxxxxxxxxxx";
 
                 var transactionType = request.IsForSale ? "vente" : "location";
                 var prompt = request.IsForSale ? 
@@ -148,6 +151,88 @@ JSON (valeurs en €/mois):
             {
                 Console.WriteLine($"[Estimate] Exception: {ex}");
                 return BadRequest($"Erreur estimation: {ex.Message}");
+            }
+        }
+
+        [HttpPost("enhance-description")]
+        public async Task<ActionResult<DescriptionResponse>> EnhanceDescription(DescriptionRequest request)
+        {
+            try
+            {
+                Console.WriteLine($"[EnhanceDescription] Request: {request.Description}");
+
+                // Clé OpenAI
+                var openAiApiKey = "xxxxxxxxxxx";
+
+                var prompt = $@"Tu es un expert en rédaction d'annonces immobilières. 
+
+MISSION: Transforme cette description basique en description attractive et professionnelle.
+
+Description originale: {request.Description}
+
+RÈGLES:
+- Garde TOUTES les informations factuelles (surface, nombre de pièces, localisation, etc.)
+- Ajoute du vocabulaire immobilier professionnel et attractif
+- Utilise des mots évocateurs et positifs
+- Structure le texte de manière fluide et vendeuse
+- Reste factuel, n'invente pas d'éléments qui ne sont pas mentionnés
+- Maximum 150 mots
+
+STYLE SOUHAITÉ:
+- Élégant et professionnel
+- Attractif pour les acheteurs/locataires
+- Vocabulaire immobilier approprié
+- Mise en valeur des atouts
+
+Retourne UNIQUEMENT la description améliorée (pas de JSON, juste le texte).";
+
+                var requestBody = new
+                {
+                    model = "gpt-3.5-turbo",
+                    messages = new[] { new { role = "user", content = prompt } },
+                    max_tokens = 300,
+                    temperature = 0.7
+                };
+
+                var json = JsonSerializer.Serialize(requestBody);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {openAiApiKey}");
+
+                var response = await _httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"[EnhanceDescription] OpenAI error: {response.StatusCode} - {errorContent}");
+                    return BadRequest($"Erreur OpenAI: {response.StatusCode} - {errorContent}");
+                }
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var openAiResponse = JsonSerializer.Deserialize<JsonElement>(responseContent);
+
+                var enhancedDescription = openAiResponse
+                    .GetProperty("choices")[0]
+                    .GetProperty("message")
+                    .GetProperty("content")
+                    .GetString();
+
+                if (string.IsNullOrWhiteSpace(enhancedDescription))
+                {
+                    return BadRequest("Réponse vide de l'API OpenAI");
+                }
+
+                // Nettoyer la réponse (enlever les guillemets éventuels)
+                enhancedDescription = enhancedDescription.Trim().Trim('"');
+
+                var result = new DescriptionResponse(enhancedDescription);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[EnhanceDescription] Exception: {ex}");
+                return BadRequest($"Erreur amélioration description: {ex.Message}");
             }
         }
     }
