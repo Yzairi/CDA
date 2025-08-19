@@ -4,15 +4,15 @@
     <span></span><span></span><span></span>
   </button>
   <nav class="nav" id="mainNav" (click)="closeMenuOnNavigate($event)">
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Home</a>
-    <a routerLink="/announcements" routerLinkActive="active" class="nav-link">Announcements</a>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Accueil</a>
+    <a routerLink="/announcements" routerLinkActive="active" class="nav-link">Annonces</a>
     <a routerLink="/estimation" routerLinkActive="active" class="nav-link">Assistant IA</a>
     <ng-container *ngIf="!auth.isLoggedIn(); else loggedIn">
       <a routerLink="/account" routerLinkActive="active" class="nav-link">Compte</a>
     </ng-container>
     <ng-template #loggedIn>
-  <a *ngIf="!auth.isAdmin()" routerLink="/dashboard" routerLinkActive="active" class="nav-link">Dashboard</a>
-  <a *ngIf="auth.isAdmin()" routerLink="/admin" routerLinkActive="active" class="nav-link">Dashboard</a>
+  <a *ngIf="!auth.isAdmin()" routerLink="/dashboard" routerLinkActive="active" class="nav-link">Tableau de bord</a>
+  <a *ngIf="auth.isAdmin()" routerLink="/admin" routerLinkActive="active" class="nav-link">Administration</a>
       <a href="#" class="nav-link" (click)="$event.preventDefault(); auth.logout()">Déconnexion</a>
     </ng-template>
   </nav>

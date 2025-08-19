@@ -60,3 +60,13 @@ jspm_packages/
 
 # Yarn Integrity file
 .yarn-integrity
+
+# Base de données SQLite
+*.db
+*.db-shm
+*.db-wal
+PropertyDb.db*
+Back-end/PropertyDb.db*
+
+# Fichiers de configuration sensibles
+appsettings.Development.json
