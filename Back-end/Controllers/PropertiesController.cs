@@ -35,16 +35,6 @@ namespace Back_end.Controllers
             return Ok(properties);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Property>> GetById(Guid id)
-        {
-            var property = await _repository.GetByIdAsync(id);
-            if (property == null)
-                return NotFound();
-
-            return Ok(property);
-        }
-
         public record CreatePropertyRequest(
             string Title,
             string Description,
@@ -74,7 +64,7 @@ namespace Back_end.Controllers
             };
 
             var created = await _repository.CreateAsync(property);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            return Created($"/api/Properties/{created.Id}", created);
         }
 
         public record UpdatePropertyRequest(

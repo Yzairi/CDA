@@ -97,7 +97,7 @@ namespace Back_end.Controllers
 
             var created = await _repository.CreateAsync(user);
             var token = GenerateToken(created);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, new AuthResponse(created.Id, created.Email, created.Role == UserRole.ADMIN, token));
+            return Created($"/api/Users/{created.Id}", new AuthResponse(created.Id, created.Email, created.Role == UserRole.ADMIN, token));
         }
 
         [HttpGet]
@@ -105,16 +105,6 @@ namespace Back_end.Controllers
         {
             var users = await _repository.GetAllAsync();
             return Ok(users);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetById(Guid id)
-        {
-            var user = await _repository.GetByIdAsync(id);
-            if (user == null)
-                return NotFound();
-
-            return Ok(user);
         }
 
         public record UpdateUserRequest(
