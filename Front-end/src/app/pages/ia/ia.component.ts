@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PriceEstimationService, EstimationRequest, EstimationResponse } from '../../services/price-estimation.service';
+import { IAService, EstimationRequest, EstimationResponse, DescriptionResponse } from '../../services/ia.service';
 
 @Component({
-  selector: 'app-price-estimation',
+  selector: 'app-ia',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './price-estimation.component.html',
-  styleUrl: './price-estimation.component.css'
+  templateUrl: './ia.component.html',
+  styleUrl: './ia.component.css'
 })
-export class PriceEstimationComponent {
+export class IAComponent {
   activeTab: 'estimation' | 'enhancement' = 'estimation';
   
   estimationRequest: EstimationRequest = {
@@ -27,7 +27,7 @@ export class PriceEstimationComponent {
   isEnhancing = false;
   error: string | null = null;
 
-  constructor(private priceEstimationService: PriceEstimationService) {}
+  constructor(private iaService: IAService) {}
 
   switchTab(tab: 'estimation' | 'enhancement') {
     this.activeTab = tab;
@@ -44,7 +44,7 @@ export class PriceEstimationComponent {
     this.error = null;
     this.estimationResult = null;
 
-    this.priceEstimationService.estimatePrice(this.estimationRequest).subscribe({
+    this.iaService.estimatePrice(this.estimationRequest).subscribe({
       next: (result: EstimationResponse) => {
         this.estimationResult = result;
         this.isLoading = false;
@@ -70,14 +70,14 @@ export class PriceEstimationComponent {
     this.isEnhancing = true;
     this.error = null;
 
-    this.priceEstimationService.enhanceDescription({ 
+    this.iaService.enhanceDescription({ 
       description: this.originalDescription 
     }).subscribe({
-      next: (response) => {
+      next: (response: DescriptionResponse) => {
         this.enhancedDescription = response.enhancedDescription;
         this.isEnhancing = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Erreur amélioration description:', err);
         this.error = 'Erreur lors de l\'amélioration de la description';
         this.isEnhancing = false;

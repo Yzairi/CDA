@@ -39,7 +39,7 @@ API backend développée en **.NET 8** pour une plateforme immobilière intégra
 ```
 Back-end/
 ├── Controllers/           # Contrôleurs API
-│   ├── PriceEstimationController.cs  # IA Estimation & Description
+│   ├── IAController.cs               # IA Estimation & Description
 │   ├── UsersController.cs            # Gestion utilisateurs
 │   └── PropertiesController.cs       # Gestion propriétés
 ├── Data/                 # Contexte base de données
@@ -74,7 +74,7 @@ dotnet ef database update
 ```
 
 ### 2. Configuration OpenAI
-Ajoutez votre clé OpenAI dans le contrôleur `PriceEstimationController.cs` :
+Ajoutez votre clé OpenAI dans le contrôleur `IAController.cs` :
 ```csharp
 var openAiApiKey = "VOTRE_CLE_OPENAI";
 ```
@@ -97,7 +97,7 @@ Le serveur démarre sur `https://localhost:5172`
 
 ### 🤖 Estimation IA
 ```http
-POST /api/priceestimation/estimate
+POST /api/ia/estimate
 Content-Type: application/json
 
 {
@@ -108,7 +108,7 @@ Content-Type: application/json
 
 ### ✨ Amélioration Description
 ```http
-POST /api/priceestimation/enhance-description
+POST /api/ia/enhance-description
 Content-Type: application/json
 
 {

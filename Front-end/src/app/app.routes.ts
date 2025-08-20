@@ -6,7 +6,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { AdminGuard } from './guards/admin.guard';
-import { PriceEstimationComponent } from './pages/price-estimation/price-estimation.component';
+import { IAComponent } from './pages/ia/ia.component';
 
 export const routes: Routes = [
   { path: '', component: HomepageComponent },
@@ -14,6 +14,7 @@ export const routes: Routes = [
   { path: 'account', component: AccountComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'admin', component: AdminDashboardComponent, canActivate: [AdminGuard] },
-  { path: 'estimation', component: PriceEstimationComponent },
+  { path: 'estimation', component: IAComponent },
+  { path: 'ia', component: IAComponent },
   { path: '**', redirectTo: '' }
 ];

@@ -25,8 +25,8 @@ export interface DescriptionResponse {
 @Injectable({
   providedIn: 'root'
 })
-export class PriceEstimationService {
-  private apiUrl = 'http://localhost:5172/api/priceestimation';
+export class IAService {
+  private apiUrl = 'http://localhost:5172/api/ia';
 
   constructor(private http: HttpClient) {}
 
