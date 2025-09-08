@@ -154,7 +154,7 @@ CDA/
 │   ├── Controllers/            # Contrôleurs API
 │   │   ├── UsersController.cs
 │   │   ├── PropertiesController.cs
-│   │   └── PriceEstimationController.cs
+│   │   └── IAController.cs
 │   ├── Models/                 # Entités métier
 │   │   ├── User.cs
 │   │   ├── Property.cs
@@ -179,9 +179,9 @@ CDA/
 │   │   │   ├── homepage/
 │   │   │   ├── account/
 │   │   │   ├── dashboard/
-│   │   │   └── price-estimation/
+│   │   │   └── ia/
 │   │   ├── services/           # Services Angular
-│   │   │   └── price-estimation.service.ts
+│   │   │   └── ia.service.ts
 │   │   ├── models/             # Types TypeScript
 │   │   └── guards/             # Guards de route
 │   └── public/                 # Assets statiques
@@ -206,8 +206,8 @@ CDA/
 #### 🤖 Intelligence Artificielle
 | Méthode | Endpoint | Description |
 |---------|----------|-------------|
-| POST | `/api/PriceEstimation/estimate` | Estimation de prix IA |
-| POST | `/api/PriceEstimation/enhance-description` | Amélioration de description |
+| POST | `/api/IA/estimate` | Estimation de prix IA |
+| POST | `/api/IA/enhance-description` | Amélioration de description |
 
 #### 👥 Gestion Utilisateurs
 | Méthode | Endpoint | Description |
@@ -227,7 +227,7 @@ CDA/
 
 **Estimation de Prix :**
 ```http
-POST /api/PriceEstimation/estimate
+POST /api/IA/estimate
 Content-Type: application/json
 
 {
@@ -238,7 +238,7 @@ Content-Type: application/json
 
 **Amélioration de Description :**
 ```http
-POST /api/PriceEstimation/enhance-description
+POST /api/IA/enhance-description
 Content-Type: application/json
 
 {
