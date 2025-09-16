@@ -70,3 +70,20 @@ Back-end/PropertyDb.db*
 
 # Fichiers de configuration sensibles
 appsettings.Development.json
+
+# Build et déploiement
+publish/
+*.zip
+cda-backend-deploy.zip
+cda-frontend-deploy.zip
+
+# Test coverage
+TestResults/
+CodeCoverage/
+
+# EF Core migrations temporaires
+**/Migrations/*.Designer.cs.bak
+
+# Fichiers temporaires de développement
+temp/
+tmp/

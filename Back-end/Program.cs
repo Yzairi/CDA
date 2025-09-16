@@ -71,11 +71,8 @@ builder.Services.AddSingleton<IAmazonS3>(_ =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 // Temporarily disable HTTPS redirection for development
 // app.UseHttpsRedirection();
