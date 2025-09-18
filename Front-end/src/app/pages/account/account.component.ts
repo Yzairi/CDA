@@ -46,14 +46,21 @@ export class AccountComponent {
           this.error = null;
         },
         error: (err: any) => {
-          this.error = err.error || 'Login failed';
+          // Traduire les erreurs en français
+          if (err.status === 401) {
+            this.error = 'Identifiants incorrects. Vérifiez votre email et mot de passe.';
+          } else if (err.status === 404) {
+            this.error = 'Compte non trouvé. Vérifiez votre adresse e-mail.';
+          } else {
+            this.error = err.error?.message || 'Erreur de connexion. Veuillez réessayer.';
+          }
         }
       });
     } else {
       this.authService.register(email, password).subscribe({
         next: (res) => {
           this.error = null;
-          // redirect depending on admin flag
+          // Redirection selon le flag admin
           if (res.isAdmin) {
             this.router.navigate(['/admin']);
           } else {
@@ -61,7 +68,14 @@ export class AccountComponent {
           }
         },
         error: (err: any) => {
-          this.error = err.error || 'Registration failed';
+          // Traduire les erreurs en français
+          if (err.status === 409) {
+            this.error = 'Cette adresse e-mail est déjà utilisée.';
+          } else if (err.status === 400) {
+            this.error = 'Données invalides. Vérifiez vos informations.';
+          } else {
+            this.error = err.error?.message || "Erreur lors de l'inscription. Veuillez réessayer.";
+          }
         }
       });
     }

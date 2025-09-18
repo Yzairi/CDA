@@ -11,14 +11,18 @@ using Back_end.Data;
 
 namespace Back_end.Controllers
 {
+    /// <summary>
+    /// Contrôleur pour la gestion des propriétés immobilières
+    /// Gère la création, modification, suppression et consultation des annonces immobilières
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class PropertiesController : ControllerBase
     {
-    private readonly PropertyRepository _repository;
-    private readonly IAmazonS3 _s3;
-    private readonly IConfiguration _config;
-    private readonly ApplicationDbContext _db;
+        private readonly PropertyRepository _repository;
+        private readonly IAmazonS3 _s3;
+        private readonly IConfiguration _config;
+        private readonly ApplicationDbContext _db;
 
         public PropertiesController(PropertyRepository repository, IAmazonS3 s3, IConfiguration config, ApplicationDbContext db)
         {
@@ -28,6 +32,10 @@ namespace Back_end.Controllers
             _db = db;
         }
 
+        /// <summary>
+        /// Récupère toutes les propriétés
+        /// </summary>
+        /// <returns>Liste de toutes les propriétés avec leurs informations complètes</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Property>>> GetAll()
         {
@@ -35,6 +43,15 @@ namespace Back_end.Controllers
             return Ok(properties);
         }
 
+        /// <summary>
+        /// Modèle de requête pour créer une nouvelle propriété
+        /// </summary>
+        /// <param name="Title">Titre de l'annonce</param>
+        /// <param name="Description">Description détaillée de la propriété</param>
+        /// <param name="Type">Type de propriété (Appartement, Maison, etc.)</param>
+        /// <param name="Price">Prix de vente ou de location</param>
+        /// <param name="Surface">Surface en m²</param>
+        /// <param name="Address">Adresse complète de la propriété</param>
         public record CreatePropertyRequest(
             string Title,
             string Description,
@@ -43,6 +60,12 @@ namespace Back_end.Controllers
             decimal Surface,
             Address Address);
 
+        /// <summary>
+        /// Crée une nouvelle propriété
+        /// Nécessite une authentification
+        /// </summary>
+        /// <param name="request">Requête de création contenant les informations de la propriété</param>
+        /// <returns>Propriété créée avec son ID unique</returns>
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<Property>> Create(CreatePropertyRequest request)
@@ -67,6 +90,15 @@ namespace Back_end.Controllers
             return Created($"/api/Properties/{created.Id}", created);
         }
 
+        /// <summary>
+        /// Modèle de requête pour mettre à jour une propriété existante
+        /// </summary>
+        /// <param name="Title">Titre de l'annonce</param>
+        /// <param name="Description">Description détaillée de la propriété</param>
+        /// <param name="Type">Type de propriété (Appartement, Maison, etc.)</param>
+        /// <param name="Price">Prix de vente ou de location</param>
+        /// <param name="Surface">Surface en m²</param>
+        /// <param name="Address">Adresse complète de la propriété</param>
         public record UpdatePropertyRequest(
             string Title,
             string Description,
@@ -75,8 +107,15 @@ namespace Back_end.Controllers
             decimal Surface,
             Address Address);
 
-    [Authorize]
-    [HttpPut("{id}")]
+        /// <summary>
+        /// Met à jour une propriété existante
+        /// Nécessite une authentification
+        /// </summary>
+        /// <param name="id">ID de la propriété à mettre à jour</param>
+        /// <param name="request">Requête de mise à jour contenant les nouvelles informations de la propriété</param>
+        /// <returns>Résultat de l'opération de mise à jour</returns>
+        [Authorize]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdatePropertyRequest request)
         {
             var property = await _repository.GetByIdAsync(id);
@@ -97,8 +136,14 @@ namespace Back_end.Controllers
             return NoContent();
         }
 
-    [Authorize]
-    [HttpDelete("{id}")]
+        /// <summary>
+        /// Supprime une propriété existante
+        /// Nécessite une authentification
+        /// </summary>
+        /// <param name="id">ID de la propriété à supprimer</param>
+        /// <returns>Résultat de l'opération de suppression</returns>
+        [Authorize]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var success = await _repository.DeleteAsync(id);
@@ -108,8 +153,14 @@ namespace Back_end.Controllers
             return NoContent();
         }
 
-    [Authorize]
-    [HttpPost("{id}/publish")]
+        /// <summary>
+        /// Publie une propriété (la rend visible dans les résultats de recherche)
+        /// Nécessite une authentification
+        /// </summary>
+        /// <param name="id">ID de la propriété à publier</param>
+        /// <returns>Résultat de l'opération de publication</returns>
+        [Authorize]
+        [HttpPost("{id}/publish")]
         public async Task<IActionResult> Publish(Guid id)
         {
             var property = await _repository.GetByIdAsync(id);
@@ -123,8 +174,14 @@ namespace Back_end.Controllers
             return NoContent();
         }
 
-    [Authorize]
-    [HttpPost("{id}/archive")]
+        /// <summary>
+        /// Archive une propriété (la rend invisible dans les résultats de recherche)
+        /// Nécessite une authentification
+        /// </summary>
+        /// <param name="id">ID de la propriété à archiver</param>
+        /// <returns>Résultat de l'opération d'archivage</returns>
+        [Authorize]
+        [HttpPost("{id}/archive")]
         public async Task<IActionResult> Archive(Guid id)
         {
             var property = await _repository.GetByIdAsync(id);
@@ -137,8 +194,14 @@ namespace Back_end.Controllers
             return NoContent();
         }
 
-    [Authorize]
-    [HttpPost("{id}/draft")]
+        /// <summary>
+        /// Met une propriété en statut "brouillon"
+        /// Nécessite une authentification
+        /// </summary>
+        /// <param name="id">ID de la propriété à modifier</param>
+        /// <returns>Résultat de l'opération de modification</returns>
+        [Authorize]
+        [HttpPost("{id}/draft")]
         public async Task<IActionResult> Draft(Guid id)
         {
             var property = await _repository.GetByIdAsync(id);
@@ -150,7 +213,15 @@ namespace Back_end.Controllers
             return NoContent();
         }
 
-    // SIMPLE: upload 1 image -> now persisted in DB
+        // SIMPLE: upload 1 image -> now persisted in DB
+        /// <summary>
+        /// Télécharge une image pour une propriété
+        /// Nécessite une authentification
+        /// </summary>
+        /// <param name="id">ID de la propriété</param>
+        /// <param name="file">Fichier image à télécharger</param>
+        /// <param name="ct">Token d'annulation</param>
+        /// <returns>URL de l'image téléchargée</returns>
         [Authorize]
         [HttpPost("{id}/image-simple")]
         public async Task<ActionResult<string>> UploadSingle(Guid id, IFormFile file, CancellationToken ct)
@@ -189,6 +260,14 @@ namespace Back_end.Controllers
         }
 
         // MULTI upload endpoint returning list of image metadata
+        /// <summary>
+        /// Télécharge plusieurs images pour une propriété
+        /// Nécessite une authentification
+        /// </summary>
+        /// <param name="id">ID de la propriété</param>
+        /// <param name="files">Liste des fichiers image à télécharger</param>
+        /// <param name="ct">Token d'annulation</param>
+        /// <returns>Liste des métadonnées des images téléchargées</returns>
         public record ImageDto(Guid Id, string Url, int Order);
 
         [Authorize]
@@ -233,6 +312,14 @@ namespace Back_end.Controllers
         }
 
         // DELETE single image
+        /// <summary>
+        /// Supprime une image d'une propriété
+        /// Nécessite une authentification
+        /// </summary>
+        /// <param name="propertyId">ID de la propriété</param>
+        /// <param name="imageId">ID de l'image à supprimer</param>
+        /// <param name="ct">Token d'annulation</param>
+        /// <returns>Résultat de l'opération de suppression</returns>
         [Authorize]
         [HttpDelete("{propertyId}/images/{imageId}")]
         public async Task<IActionResult> DeleteImage(Guid propertyId, Guid imageId, CancellationToken ct)
@@ -249,6 +336,14 @@ namespace Back_end.Controllers
 
         public record ReorderRequest(List<Guid> ImageIds);
 
+        /// <summary>
+        /// Modifie l'ordre des images d'une propriété
+        /// Nécessite une authentification
+        /// </summary>
+        /// <param name="propertyId">ID de la propriété</param>
+        /// <param name="body">Requête contenant la nouvelle liste d'IDs d'images dans l'ordre souhaité</param>
+        /// <param name="ct">Token d'annulation</param>
+        /// <returns>Résultat de l'opération de modification d'ordre</returns>
         [Authorize]
         [HttpPut("{propertyId}/images/reorder")]
         public async Task<IActionResult> ReorderImages(Guid propertyId, [FromBody] ReorderRequest body, CancellationToken ct)

@@ -6,16 +6,34 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Back_end.Controllers
 {
+    /// <summary>
+    /// Contrôleur pour les statistiques de l'application immobilière
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class StatsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        
+        /// <summary>
+        /// Initialise une nouvelle instance du contrôleur des statistiques
+        /// </summary>
+        /// <param name="context">Contexte de base de données</param>
         public StatsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Modèle de réponse pour le résumé des statistiques
+        /// </summary>
+        /// <param name="TotalUsers">Nombre total d'utilisateurs</param>
+        /// <param name="ActiveUsers">Nombre d'utilisateurs actifs</param>
+        /// <param name="TotalProperties">Nombre total de propriétés</param>
+        /// <param name="DraftProperties">Nombre de propriétés en brouillon</param>
+        /// <param name="PublishedProperties">Nombre de propriétés publiées</param>
+        /// <param name="ArchivedProperties">Nombre de propriétés archivées</param>
+        /// <param name="AveragePublishDelayMinutes">Délai moyen de publication en minutes</param>
         public record StatsSummary(
             int TotalUsers,
             int ActiveUsers,
@@ -26,6 +44,13 @@ namespace Back_end.Controllers
             double? AveragePublishDelayMinutes
         );
 
+        /// <summary>
+        /// Récupère un résumé des statistiques générales de l'application
+        /// </summary>
+        /// <returns>Résumé des statistiques incluant les utilisateurs et propriétés</returns>
+        /// <response code="200">Statistiques récupérées avec succès</response>
+        /// <response code="401">Non autorisé - Token JWT requis</response>
+        /// <response code="403">Accès interdit - Privilèges administrateur requis</response>
         [HttpGet("summary")]
         [Authorize]
         public async Task<ActionResult<StatsSummary>> GetSummary()
@@ -67,9 +92,28 @@ namespace Back_end.Controllers
             return Ok(summary);
         }
 
+        /// <summary>
+        /// Modèle pour un point dans le temps avec un compteur
+        /// </summary>
+        /// <param name="Date">Date du point</param>
+        /// <param name="Count">Nombre cumulé à cette date</param>
         public record TimelinePoint(DateOnly Date, int Count);
+        
+        /// <summary>
+        /// Modèle de réponse pour les données de timeline
+        /// </summary>
+        /// <param name="Users">Timeline cumulative des utilisateurs</param>
+        /// <param name="Properties">Timeline cumulative des propriétés</param>
+        /// <param name="PublishedProperties">Timeline cumulative des propriétés publiées</param>
         public record TimelineResponse(IEnumerable<TimelinePoint> Users, IEnumerable<TimelinePoint> Properties, IEnumerable<TimelinePoint> PublishedProperties);
 
+        /// <summary>
+        /// Récupère les données de timeline pour l'évolution des utilisateurs et propriétés
+        /// </summary>
+        /// <returns>Données de timeline cumulatives par jour</returns>
+        /// <response code="200">Timeline récupérée avec succès</response>
+        /// <response code="401">Non autorisé - Token JWT requis</response>
+        /// <response code="403">Accès interdit - Privilèges administrateur requis</response>
         [HttpGet("timeline")]
         [Authorize]
         public async Task<ActionResult<TimelineResponse>> GetTimeline()

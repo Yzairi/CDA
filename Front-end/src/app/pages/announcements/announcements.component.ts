@@ -51,10 +51,6 @@ export class AnnouncementsComponent implements OnInit {
         // Extraire les types uniques
         this.propertyTypes = [...new Set(this.properties.map(p => p.type).filter(type => type))];
         
-        // Debug: afficher les types trouvés
-        console.log('Types de biens trouvés:', this.propertyTypes);
-        console.log('Échantillon de propriétés:', this.properties.slice(0, 3).map(p => ({ id: p.id, type: p.type, title: p.title })));
-        
         this.filteredProperties = [...this.properties];
         this.loading = false;
       },
@@ -66,8 +62,6 @@ export class AnnouncementsComponent implements OnInit {
   }
 
   applyFilters(): void {
-    console.log('Filtrage avec selectedType:', this.selectedType);
-    
     this.filteredProperties = this.properties.filter(property => {
       // Filtre par recherche (titre + description)
       if (this.searchQuery) {
@@ -79,7 +73,6 @@ export class AnnouncementsComponent implements OnInit {
 
       // Filtre par type
       if (this.selectedType && this.selectedType.trim() !== '') {
-        console.log(`Comparaison: property.type="${property.type}" vs selectedType="${this.selectedType}"`);
         if (property.type !== this.selectedType) {
           return false;
         }

@@ -16,7 +16,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
-        console.log('[ERROR] HTTP Error:', error);
+        // Console.log supprimé pour éviter les messages rouges en production
 
         if (error.status === 401) {
           // Token expiré ou invalide

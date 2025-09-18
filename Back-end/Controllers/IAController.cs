@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Back_end.Controllers
 {
+    /// <summary>
+    /// Contrôleur pour les services d'intelligence artificielle (estimation de prix et amélioration de descriptions)
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class IAController : ControllerBase
@@ -11,25 +14,59 @@ namespace Back_end.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
+        /// <summary>
+        /// Initialise une nouvelle instance du contrôleur IA
+        /// </summary>
+        /// <param name="httpClient">Client HTTP pour les appels API externes</param>
+        /// <param name="config">Configuration de l'application</param>
         public IAController(HttpClient httpClient, IConfiguration config)
         {
             _httpClient = httpClient;
             _config = config;
         }
 
+        /// <summary>
+        /// Modèle de demande d'estimation de prix
+        /// </summary>
+        /// <param name="Description">Description détaillée du bien immobilier</param>
+        /// <param name="IsForSale">True pour une vente, false pour une location</param>
         public record EstimationRequest(
             string Description,
-            bool IsForSale); // true = vente, false = location
+            bool IsForSale);
 
+        /// <summary>
+        /// Modèle de réponse d'estimation de prix
+        /// </summary>
+        /// <param name="EstimatedPrice">Prix estimé principal</param>
+        /// <param name="MinPrice">Prix minimum de la fourchette</param>
+        /// <param name="MaxPrice">Prix maximum de la fourchette</param>
+        /// <param name="Explanation">Explication détaillée de l'estimation</param>
         public record EstimationResponse(
             decimal EstimatedPrice,
             decimal MinPrice,
             decimal MaxPrice,
             string Explanation);
 
+        /// <summary>
+        /// Modèle de demande d'amélioration de description
+        /// </summary>
+        /// <param name="Description">Description originale à améliorer</param>
         public record DescriptionRequest(string Description);
+        
+        /// <summary>
+        /// Modèle de réponse d'amélioration de description
+        /// </summary>
+        /// <param name="EnhancedDescription">Description améliorée par l'IA</param>
         public record DescriptionResponse(string EnhancedDescription);
 
+        /// <summary>
+        /// Estime le prix d'un bien immobilier en utilisant l'IA (OpenAI GPT)
+        /// </summary>
+        /// <param name="request">Demande d'estimation contenant la description et le type de transaction</param>
+        /// <returns>Estimation de prix avec fourchette et explication</returns>
+        /// <response code="200">Estimation générée avec succès</response>
+        /// <response code="400">Demande invalide ou clé API manquante</response>
+        /// <response code="500">Erreur interne du serveur</response>
         [HttpPost("estimate")]
         public async Task<ActionResult<EstimationResponse>> EstimatePrice(EstimationRequest request)
         {
@@ -54,19 +91,19 @@ Vous êtes un expert en évaluation immobilière française. Analysez cette desc
 DESCRIPTION: {request.Description}
 
 Utilisez ces références de prix 2025 par région française :
-- Paris centre: 10 000-15 000€/m²
-- Paris périphérie: 8 000-12 000€/m²
-- Lyon centre: 5 000-7 000€/m²
+- Paris centre: 12 000-15 000€/m²
+- Paris périphérie: 10 000-12 000€/m²
+- Lyon centre: 6 000-7 000€/m²
 - Marseille centre: 3 500-5 500€/m²
 - Toulouse: 3 200-4 800€/m²
-- Bordeaux: 4 000-6 000€/m²
-- Lille: 2 800-4 200€/m²
+- Bordeaux: 5 000-6 000€/m²
+- Lille: 3 800-4 200€/m²
 - Montpellier: 3 500-5 000€/m²
 - Strasbourg: 2 500-3 800€/m²
 - Rennes: 3 000-4 500€/m²
 - Banlieues grandes villes: -20% à -40%
 - Villes moyennes: 1 500-2 500€/m²
-- Rural: 800-1 500€/m²
+- Rural: 100-1 500€/m²
 
 CRITÈRES D'AJUSTEMENT:
 ✓ État (neuf/rénové/ancien): ±15%
@@ -87,12 +124,12 @@ Vous êtes un expert en évaluation immobilière française. Analysez cette desc
 DESCRIPTION: {request.Description}
 
 Utilisez ces références de loyers 2025 par région française (€/m²/mois):
-- Paris centre: 35-45€/m²/mois
-- Paris périphérie: 25-35€/m²/mois  
+- Paris centre: 40-45€/m²/mois
+- Paris périphérie: 29-35€/m²/mois  
 - Lyon centre: 15-20€/m²/mois
 - Marseille centre: 12-16€/m²/mois
 - Toulouse: 12-15€/m²/mois
-- Bordeaux: 13-17€/m²/mois
+- Bordeaux: 15-17€/m²/mois
 - Lille: 11-14€/m²/mois
 - Montpellier: 12-15€/m²/mois
 - Strasbourg: 10-13€/m²/mois
@@ -179,6 +216,14 @@ Répondez UNIQUEMENT avec ce JSON exact:
             }
         }
 
+        /// <summary>
+        /// Améliore une description immobilière en utilisant l'IA (OpenAI GPT)
+        /// </summary>
+        /// <param name="request">Demande contenant la description originale à améliorer</param>
+        /// <returns>Description améliorée et plus attractive</returns>
+        /// <response code="200">Description améliorée avec succès</response>
+        /// <response code="400">Demande invalide ou clé API manquante</response>
+        /// <response code="500">Erreur interne du serveur</response>
         [HttpPost("enhance-description")]
         public async Task<ActionResult<DescriptionResponse>> EnhanceDescription(DescriptionRequest request)
         {

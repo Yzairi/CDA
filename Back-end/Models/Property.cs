@@ -32,9 +32,9 @@ namespace Back_end.Models
         
         public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 
-        public PropertyStatus Status { get; set; } = PropertyStatus.DRAFT;
+        public PropertyStatus Status { get; set; } = PropertyStatus.PUBLISHED;
 
-        public DateTime? PublishedAt { get; set; }
+        public DateTime? PublishedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation properties
         public User? User { get; set; }
