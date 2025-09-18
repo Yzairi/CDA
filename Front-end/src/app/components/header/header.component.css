@@ -25,6 +25,17 @@
   position:relative;
 }
 
+.logo-img {
+  height: 70px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.logo-img:hover {
+  transform: scale(1.05);
+}
+
 .nav { display:flex; gap:2.2rem; align-items:center; }
 
 .nav-link {

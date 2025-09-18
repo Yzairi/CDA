@@ -18,7 +18,7 @@ namespace Back_end.Test
             Assert.Equal("House", property.Type);
             Assert.Equal(250000.50m, property.Price);
             Assert.NotEqual(Guid.Empty, property.Id);
-            Assert.Equal(PropertyStatus.DRAFT, property.Status);
+            Assert.Equal(PropertyStatus.PUBLISHED, property.Status);
             Assert.True(property.CreatedAt <= DateTime.UtcNow);
         }
 

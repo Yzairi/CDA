@@ -1,5 +1,7 @@
 <header class="header" [class.menu-open]="menuOpen">
-  <div class="logo">LOGO</div>
+  <div class="logo">
+    <img src="/logo.png" alt="Logo CDA" class="logo-img">
+  </div>
   <button class="burger" type="button" (click)="toggleMenu()" [attr.aria-label]="menuOpen ? 'Fermer le menu' : 'Menu'" [attr.aria-expanded]="menuOpen" aria-controls="mainNav">
     <span></span><span></span><span></span>
   </button>

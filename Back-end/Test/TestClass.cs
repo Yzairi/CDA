@@ -87,13 +87,13 @@ namespace Back_end.Test
         }
 
         [Fact]
-        public void Property_ShouldHaveDefaultDraftStatus()
+        public void Property_ShouldHaveDefaultPublishedStatus()
         {
             // Arrange
             var property = new Property("Test", "Test desc", "House", 100000m);
 
             // Act & Assert
-            Assert.Equal(PropertyStatus.DRAFT, property.Status);
+            Assert.Equal(PropertyStatus.PUBLISHED, property.Status);
         }
 
         [Fact]

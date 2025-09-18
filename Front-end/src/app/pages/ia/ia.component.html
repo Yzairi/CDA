@@ -1,7 +1,7 @@
 <div class="estimation-container">
   <div class="estimation-card">
     <div class="card-header">
-      <h2>🤖 Assistant IA Immobilier</h2>
+      <h2>Assistant IA Immobilier</h2>
       <p>Estimez vos biens et améliorez vos descriptions grâce à l'intelligence artificielle</p>
     </div>
 
@@ -11,13 +11,13 @@
         class="tab-button" 
         [class.active]="activeTab === 'estimation'"
         (click)="switchTab('estimation')">
-        💰 Estimation de prix
+        Estimation de prix
       </button>
       <button 
         class="tab-button" 
         [class.active]="activeTab === 'enhancement'"
         (click)="switchTab('enhancement')">
-        ✨ Amélioration de description
+        Amélioration de description
       </button>
     </div>
 
@@ -32,8 +32,7 @@
             name="description"
             placeholder="Décrivez votre bien : type, ville, quartier, surface, nombre de pièces, état, équipements..."
             rows="4"
-            required>
-          </textarea>
+            required></textarea>
           <small class="form-hint">Ex: Appartement 3 pièces 75m² à Paris 15ème, bon état, balcon, proche métro</small>
         </div>
 
@@ -103,8 +102,7 @@
             id="originalDesc"
             [(ngModel)]="originalDescription"
             placeholder="Saisissez votre description basique..."
-            rows="4">
-          </textarea>
+            rows="4"></textarea>
           <small class="form-hint">Ex: Appartement 3 pièces 75m² à Paris 15ème, bon état, balcon, proche métro</small>
         </div>
 
@@ -117,7 +115,7 @@
           class="enhance-btn" 
           (click)="enhanceDescription()" 
           [disabled]="isEnhancing || !originalDescription.trim()">
-          <span *ngIf="!isEnhancing">✨ Améliorer la description</span>
+          <span *ngIf="!isEnhancing">Améliorer la description</span>
           <span *ngIf="isEnhancing">
             <i class="spinner"></i>
             Amélioration en cours...
@@ -130,7 +128,7 @@
             {{ enhancedDescription }}
           </div>
           <button class="copy-btn" (click)="copyEnhancedDescription()">
-            📋 Copier
+            Copier
           </button>
         </div>
       </div>
